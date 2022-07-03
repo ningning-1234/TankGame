@@ -1,4 +1,5 @@
 import pygame
+from utils import *
 
 class MovableEntity(pygame.Rect):
     def __init__(self, pos, map, speed):
@@ -29,5 +30,11 @@ class MovableEntity(pygame.Rect):
             # bottom wall
             if (self[1] + self[3] + self.move_y > self.map.bounds[3]):
                 self.move_y = self.map.bounds[3] - (self[1] + self[3])
+
+        dist = get_hyp([0,0],[self.move_x, self.move_y])
+        if(dist>self.speed):
+            exceed_ratio = self.speed / dist
+            self.move_x = exceed_ratio * self.move_x
+            self.move_y = exceed_ratio * self.move_y
 
         self.move_ip(self.move_x, self.move_y)
