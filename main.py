@@ -1,6 +1,7 @@
 import pygame
 from tank import *
 from map import *
+from bullet import *
 from controller_mappings import *
 
 run=True
@@ -13,6 +14,7 @@ controller_conected1 = False
 controller_conected2 = False
 controller1 = None
 controller2 = None
+
 if(pygame.joystick.get_count() > 0):
     controller_conected1 = True
     controller1 = pygame.joystick.Joystick(0)
@@ -41,6 +43,8 @@ player1 = Player(1, (100, 275, 50, 50), [(100, 175, 255),  (25, 100, 255)], map,
                 pygame.K_a: 'BODY LEFT',
                 pygame.K_w: 'BODY UP'}
                )
+map.player1 = player1
+
 player2 = Player(2, (450, 275, 50, 50), [(255, 100, 100), (255, 25, 25)],  map,
                {pygame.K_RIGHT: 'BODY RIGHT',
                 pygame.K_DOWN: 'BODY DOWN',
@@ -48,14 +52,11 @@ player2 = Player(2, (450, 275, 50, 50), [(255, 100, 100), (255, 25, 25)],  map,
                 pygame.K_UP: 'BODY UP'
                 }
                )
+map.player2 = player2
 
-# reticle1 = Reticle((150, 275, 10, 10), map, (25, 100, 255), 1)
-# reticle2 = Reticle((400, 275, 10, 10), map, (255, 25, 25), 2)
 
-#todo
-# add second controllable player
-# can be controlled through any means
-
+bullet = Bullet((250, 250), map, 5, 80)
+map.bullet_lst.append(bullet)
 
 
 while (run):
@@ -75,22 +76,16 @@ while (run):
     else:
         controller2_buttons = None
 
-    player1.update(kb_inputs=keys, controller_inputs=controller1_buttons)
-    player2.update(kb_inputs=keys, controller_inputs=controller2_buttons)
-    map.update()
-
-    # reticle1.update(controller_inputs=controller1_buttons)
-    # reticle2.update(controller_inputs=controller2_buttons)
-
+    # player1.update(kb_inputs=keys, controller_inputs=controller1_buttons)
+    # player2.update(kb_inputs=keys, controller_inputs=controller2_buttons)
+    map.update(kb_inputs=keys, controller_inputs1=controller1_buttons, controller_inputs2=controller2_buttons)
 
     #_____Draw_____
     window.fill(BG_COLOR)
     map.draw(window)
-    player1.draw(window)
-    player2.draw(window)
-
-    # reticle1.draw(window)
-    # reticle2.draw(window)
+    # bullet.draw(window)
+    # player1.draw(window)
+    # player2.draw(window)
 
     pygame.display.flip()
     clock.tick(FPS)
