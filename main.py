@@ -52,12 +52,16 @@ player2 = Player(2, (450, 275, 50, 50), [(255, 100, 100), (255, 25, 25)],  map,
                 pygame.K_UP: 'BODY UP'
                 }
                )
-map.player2 = player2
+# map.player2 = player2
 
 
-bullet = Bullet((250, 250), map, 5, 80)
-map.bullet_lst.append(bullet)
+# bullet = Bullet((250, 250), map, 5, 80)
+# map.bullet_lst.append(bullet)
 
+angle = 0
+pivot = [100,100]
+point1 = [80,80]
+point2 = [60,60]
 
 while (run):
     for event in pygame.event.get():
@@ -80,9 +84,19 @@ while (run):
     # player2.update(kb_inputs=keys, controller_inputs=controller2_buttons)
     map.update(kb_inputs=keys, controller_inputs1=controller1_buttons, controller_inputs2=controller2_buttons)
 
+    angle = (angle + 1)%360
+
     #_____Draw_____
     window.fill(BG_COLOR)
     map.draw(window)
+
+    pivot_rotate_point1 = pivot_rotate(point1,pivot, angle)
+    pivot_rotate_point2 = pivot_rotate(point2,pivot, angle)
+    # print(pivot_rotate_point1)
+    # pygame.draw.rect(window, [250, 250,250], (pivot[0],pivot[1],2,2))
+    # pygame.draw.rect(window, [150, 150,250], (pivot_rotate_point1[0],pivot_rotate_point1[1],2,2))
+    # pygame.draw.rect(window, [150, 150,250], (pivot_rotate_point2[0],pivot_rotate_point2[1],2,2))
+
     # bullet.draw(window)
     # player1.draw(window)
     # player2.draw(window)

@@ -16,7 +16,8 @@ class Map(pygame.Rect):
 
     def update(self, *args, **kwargs):
         self.player1.update(kb_inputs=kwargs['kb_inputs'], controller_inputs=kwargs['controller_inputs1'])
-        self.player2.update(kb_inputs=kwargs['kb_inputs'], controller_inputs=kwargs['controller_inputs2'])
+        if(self.player2 is not None):
+            self.player2.update(kb_inputs=kwargs['kb_inputs'], controller_inputs=kwargs['controller_inputs2'])
 
         for bullet in self.bullet_lst:
             bullet.update()
@@ -33,4 +34,5 @@ class Map(pygame.Rect):
 
         # draw players
         self.player1.draw(surface)
-        self.player2.draw(surface)
+        if (self.player2 is not None):
+            self.player2.draw(surface)

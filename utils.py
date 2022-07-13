@@ -67,6 +67,7 @@ def pivot_rotate(position, pivot_point, pivot_angle):
         return position
     # get distance between center of image and pivot point
     pivot_point_dist = get_hyp(position, pivot_point)
+    # print(pivot_point_dist)
 
     # get the angle between the center of the image and the pivot point
     pivot_point_angle = math.degrees(math.atan2(pivot_point[1] - position[1], -(pivot_point[0] - position[0]))) % 360
@@ -85,13 +86,13 @@ def pivot_rotate(position, pivot_point, pivot_angle):
     return [pivot_point[0] + new_pos_x, pivot_point[1] + new_pos_y]
 
 # move an image at a certain angle around a pivot
-def img_pivot_rotate(img, position, img_pivot_point, pivot_angle):
+def img_pivot_rotate(img, position, pivot_point, pivot_angle):
     '''
     Moves an image around a pivot at a given angle
 
     :param img: image to be moved
     :param position: original postion of the image
-    :param img_pivot_point: coordinates of the pivot relative to the image
+    :param pivot_point: coordinates of the pivot on the surface
     :param pivot_angle: angle the point will move around the pivot in degrees
     :return: new position of the image
     '''
@@ -103,15 +104,19 @@ def img_pivot_rotate(img, position, img_pivot_point, pivot_angle):
     rect_center_y = position[1] + img_rect.centery
 
     # pivot coords on main surface
-    pivot_cord_x = position[0] + img_pivot_point[0]
-    pivot_cord_y = position[1] + img_pivot_point[1]
+    # pivot_cord_x = img_size_rect[0] + img_pivot_point[0]
+    # pivot_cord_y = img_size_rect[1] + img_pivot_point[1]
+
 
     # print(img_center_x, img_center_y)
     # print(position[0]+img_rect.centerx, position[1]+img_rect.centery)
     # print(new_pos[0]+rot_img_rect.centerx, new_pos[1]+rot_img_rect.centery)
 
+    # print(rect_center_x, rect_center_y)
+    # print(pivot_cord_x, pivot_cord_y)
+
     # new center relative to main surface
-    new_center = pivot_rotate([rect_center_x, rect_center_y],[pivot_cord_x,pivot_cord_y],pivot_angle)
+    new_center = pivot_rotate([rect_center_x, rect_center_y],pivot_point,pivot_angle)
     # print(new_center)
 
     # offset original rect
