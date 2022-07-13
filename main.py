@@ -55,9 +55,8 @@ player2 = Player(2, (450, 275, 50, 50), [(255, 100, 100), (255, 25, 25)],  map,
 map.player2 = player2
 
 
-bullet = Bullet((250, 250), map, 5, 80)
-map.bullet_lst.append(bullet)
-
+# bullet = Bullet((250, 250), map, 5, 80)
+# map.bullet_lst.append(bullet)
 
 while (run):
     for event in pygame.event.get():
@@ -79,6 +78,7 @@ while (run):
     # player1.update(kb_inputs=keys, controller_inputs=controller1_buttons)
     # player2.update(kb_inputs=keys, controller_inputs=controller2_buttons)
     map.update(kb_inputs=keys, controller_inputs1=controller1_buttons, controller_inputs2=controller2_buttons)
+
 
     #_____Draw_____
     window.fill(BG_COLOR)
