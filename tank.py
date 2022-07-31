@@ -1,10 +1,14 @@
 from utils import *
+from animation import Animation
 
 import pygame
 
 from entity import *
+from weapons import *
 from controller_mappings import *
+from bullet import *
 from animation import *
+from random import randint
 
 default_kb_controls = {pygame.K_d: 'BODY RIGHT',
                        pygame.K_s: 'BODY DOWN',
@@ -22,24 +26,28 @@ default_controller_controls = {'DPAD_UP': 'BODY UP',
                                'L': 'SHOOT'
                                }
 
-
 class Player():
-    def __init__(self, player_num, pos, colors, map, kb_controls=default_kb_controls,
+    def __init__(self, player_num, tank_pos, reticle_pos, colors, game_map, kb_controls=default_kb_controls,
                  controller_controls=default_controller_controls):
         self.player_num = player_num
-        # self.pos = pos
-        self.map = map
+        self.game_map = game_map
         self.kb_controls = kb_controls
         self.controller_controls = controller_controls
 
-        self.tank_body = Tank(pos, map, colors[0], './assets/body_p' + str(player_num) + '.png', self)
-        self.reticle = Reticle((pos[0] + 80, pos[1]), map, colors[1], './assets/reticle_p' + str(player_num) + '.png',
-                               self)
-        self.cannon = TankCannon(self.tank_body.center, 60, 20, './assets/cannon_p' + str(player_num) + '.png', self)
+        self.folder = './assets/player' + str(player_num) + '/'
+
+        self.tank_body = Tank(tank_pos, game_map, colors[0], self.folder + 'body.png', self)
+        self.reticle = Reticle((reticle_pos[0] + 80, reticle_pos[1] + 15),
+                               game_map, colors[1],
+                               self.folder + 'reticle.png',
+                               self.folder + 'reticle_shoot.png', self)
 
         self.shooting = False
-        self.shoot_delay = 20
+        self.shoot_delay = 15
         self.last_shot = 0
+        self.cannon = Weapon1(self.tank_body.center, 60, 20, self.folder, self)
+
+
 
     def update(self, *args, **kwargs):
         if (kwargs['kb_inputs'] is not None):
@@ -49,9 +57,9 @@ class Player():
             self.parse_con_sticks(kwargs['controller_inputs'])
 
         if (self.shooting):
-            if (self.map.get_time() >= self.last_shot + self.shoot_delay):
+            if (self.game_map.get_time() >= self.last_shot + self.shoot_delay):
                 self.shooting = False
-                self.reticle.color = self.reticle.normal_color
+                self.reticle.img = self.reticle.default_img
 
         self.tank_body.update()
         self.reticle.update()
@@ -108,25 +116,35 @@ class Player():
             self.reticle.move_y = round(self.reticle.speed * (joy_stick_rightY / 4))
 
     def shoot(self):
-        self.last_shot = self.map.get_time()
-        print(self.last_shot)
+        self.last_shot = self.game_map.get_time()
+        # print(self.last_shot)
         self.shooting = True
-        self.reticle.color = self.reticle.shoot_color
-        # todo spawn bullet
+        self.reticle.img = self.reticle.shoot_img
+        self.cannon.shoot()
+
+        # bullet = Bullet((self.cannon.bullet_spawn[0] + offset, self.cannon.bullet_spawn[1] + offset),
+        #                 self.game_map, 5, self.cannon.angle)
+        # self.game_map.bullet_lst.append(bullet)
+
+        # bullet = Bullet((self.cannon.bullet_spawn), self.map, 5, self.cannon.angle)
+        # self.map.bullet_lst.append(bullet)
+        # bullet = Bullet((self.cannon.bullet_spawn), self.map, 5, self.cannon.angle)
+        # self.map.bullet_lst.append(bullet)
+        # self.cannon.fire_animation.reset()
+        # self.cannon.animation = self.cannon.fire_animation
+
 
     def draw(self, surface):
         self.tank_body.draw(surface)
         self.cannon.draw(surface)
         self.reticle.draw(surface)
 
-
 class Tank(MovableEntity):
     def __init__(self, pos, map, color, img_path, player):
         super().__init__(pos, map, 4)
-        self.color = color
+        # self.color = color
         self.img_path = img_path
-        self.img = pygame.image.load(img_path)
-        self.img.set_colorkey((0, 0, 0))
+        self.img = get_transparent_surface(pygame.image.load(img_path), (self[2], self[3]))
         self.player = player
 
     def update(self, *args, **kwargs):
@@ -136,18 +154,24 @@ class Tank(MovableEntity):
         # pygame.draw.rect(surface, self.color, self)
         surface.blit(self.img, self)
 
-
 class Reticle(MovableEntity):
-    def __init__(self, pos, map, color, img_path, player):
+    def __init__(self, pos, map, color, default_img_path, shoot_img_path, player):
         super().__init__((pos[0], pos[1], 20, 20), map, 3)
-        self.normal_color = color
-        self.shoot_color = (200, 225, 255)
-        self.color = self.normal_color
-        self.img_path = img_path
-        self.img = get_transparent_surface(pygame.image.load(img_path), (self[2], self[3]))
+
+        # self.normal_color = color
+        # self.shoot_color = (200, 225, 255)
+        # self.color = self.normal_color
+
+        self.default_img_path = default_img_path
+        self.shoot_img_path = shoot_img_path
+        self.default_img = get_transparent_surface(pygame.image.load(default_img_path), (self[2], self[3]))
+        self.shoot_img = get_transparent_surface(pygame.image.load(shoot_img_path), (self[2], self[3]))
+        self.img = self.default_img
 
         self.player = player
         self.tank_radius = 200
+
+        self.ignore_walls = True
 
         self.x_pos = self.centerx
         self.y_pos = self.centery
@@ -175,53 +199,3 @@ class Reticle(MovableEntity):
         # pygame.draw.rect(surface, self.color, self)
         surface.blit(self.img, self)
 
-
-class TankCannon():
-    def __init__(self, pos, width, height, img_path, player):
-        self.position = pos
-        self.width = width
-        self.height = height
-        self.img_path = img_path
-        self.img = get_transparent_surface(pygame.image.load(img_path), (width, height))
-        self.player = player
-
-        self.body = player.tank_body
-        self.reticle = player.reticle
-
-        # position of the pivot on the image
-        # self.image_pivot_pos = [0, 0]
-        self.image_pivot_pos = [height/2, height/2]
-        # self.image_pivot_pos = [height/2, height/2]
-
-        self.angle = get_angle(self.position, [self.reticle.x_pos, self.reticle.y_pos])
-        # self.angle = 0
-
-    def update(self, *args, **kwargs):
-        self.position = self.body.center
-
-        self.angle = get_angle(self.position, [self.reticle.x_pos, self.reticle.y_pos])
-        # self.angle = (self.angle+1)%360
-
-    def draw(self, surface):
-        # position rectangle for the image
-        img_pos_rect = [self.position[0] - self.image_pivot_pos[0],
-                        self.position[1] - self.image_pivot_pos[1],
-                        self.width, self.height]
-
-        # centered rotation of image
-        rotated_img, rotated_rect = centered_rotate(self.img, img_pos_rect, -self.angle)
-
-        # rotate image about a pivot
-        pivot_rect = img_pivot_rotate(rotated_img, rotated_rect, self.position, -self.angle)
-        # pivot_rect = img_pivot_rotate(rotated_img, rotated_rect, pivot_point, -self.angle)
-
-        surface.blit(rotated_img, pivot_rect)
-
-        # draw position
-        # pygame.draw.rect(surface, [250, 150, 150], (self.position[0], self.position[1], 2, 2))
-
-# todo
-#  when the shoot button is pressed, create a bullet object on the body of the tank
-#  the bullet should be at the angle of the cannon
-#  the reticle should change its texture while on cooldown
-#  give the cannon an animation when firing
