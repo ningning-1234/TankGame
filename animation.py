@@ -1,7 +1,44 @@
 import pygame
 
+class Animation:
+    def __init__(self, frames, frame_duration, sequence, loop=0, default_frame=0):
+        # list of images
+        self.frames = frames
+        # fps of the animation
+        self.frame_duration = frame_duration
+        # list sequence the frames are played
+        self.sequence = sequence
+        # number of loops
+        self.default_loop = loop
+        self.loop = loop
+        # default frame shown once animation is complete
+        self.default_frame = default_frame
 
-class Animation():
+        self.complete = False
+        self.timer = 0
+        self.timer_lim = self.frame_duration * len(self.sequence)
+
+    def reset(self):
+        self.loop = self.default_loop
+        self.complete = False
+        self.timer = 0
+        self.timer_lim = self.frame_duration * len(self.sequence)
+
+    def animate(self):
+        current_frame = self.default_frame
+        if (not self.complete):
+            current_frame = self.sequence[self.timer // self.frame_duration]
+            self.timer = self.timer + 1
+        print(current_frame)
+
+        if (self.timer >= self.timer_lim):
+            self.timer = 0
+            self.loop = self.loop - 1
+            if (self.loop == 0):
+                self.complete = True
+        return self.frames[current_frame]
+
+class TransformAnimation():
     def __init__(self, frames, frame_duration, loop=0):
         self.frames = frames
         self.frame_duration = frame_duration
@@ -28,7 +65,7 @@ class Animation():
         surface.blit(image, position)
 
 
-class MoveAnimation(Animation):
+class MoveAnimation(TransformAnimation):
     def __init__(self, frames, frame_duration, x_y=None, loop=0):
         self.x_y = x_y
         super().__init__(frames, frame_duration, loop)
@@ -44,7 +81,7 @@ class MoveAnimation(Animation):
             surface.blit(image, (position[0] + current_frame[0], position[1] + current_frame[1]))
 
 
-class ScaleAnimation(Animation):
+class ScaleAnimation(TransformAnimation):
     def __init__(self, frames, frame_duration, center=(), x_y=None, loop=0):
         self.x_y = x_y
         self.center = center
@@ -67,7 +104,7 @@ class ScaleAnimation(Animation):
         surface.blit(scaled_img, draw_postion)
 
 
-class RotateAnimation(Animation):
+class RotateAnimation(TransformAnimation):
     def __init__(self, frames, frame_duration, center=(), rotation_center=(), loop=0):
         self.center = center
         self.rotation_center = rotation_center
