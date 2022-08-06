@@ -45,8 +45,7 @@ class Player():
         self.shooting = False
         self.shoot_delay = 15
         self.last_shot = 0
-        self.cannon = Weapon1(self.tank_body.center, 60, 20, self.folder, self)
-
+        self.cannon = TankCannon(self.tank_body.center, 60, 20, self.folder, self)
 
 
     def update(self, *args, **kwargs):
@@ -76,6 +75,10 @@ class Player():
                     self.tank_body.move_x = -self.tank_body.speed
                 if (self.kb_controls[key] == 'BODY UP'):
                     self.tank_body.move_y = -self.tank_body.speed
+                # shoot
+                if (self.kb_controls[key] == 'SHOOT'):
+                    if (not self.shooting):
+                        self.shoot()
 
     def parse_con_buttons(self, con_inputs):
         for button in self.controller_controls:
@@ -141,7 +144,7 @@ class Player():
 
 class Tank(MovableEntity):
     def __init__(self, pos, map, color, img_path, player):
-        super().__init__(pos, map, 4)
+        super().__init__(pos, map, 6)
         # self.color = color
         self.img_path = img_path
         self.img = get_transparent_surface(pygame.image.load(img_path), (self[2], self[3]))
