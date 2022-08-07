@@ -17,7 +17,8 @@ default_kb_controls = {pygame.K_d: 'BODY RIGHT',
                        pygame.K_RIGHT: 'BODY RIGHT',
                        pygame.K_DOWN: 'BODY DOWN',
                        pygame.K_LEFT: 'BODY LEFT',
-                       pygame.K_UP: 'BODY UP'
+                       pygame.K_UP: 'BODY UP',
+                       pygame.K_v: 'SHOOT'
                        }
 default_controller_controls = {'DPAD_UP': 'BODY UP',
                                'DPAD_DOWN': 'BODY DOWN',
