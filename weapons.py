@@ -2,10 +2,11 @@ from random import randint
 from bullet import Bullet
 from utils import *
 from animation import *
+from reticle import *
 
 # generic tank cannon
 class TankCannon():
-    def __init__(self, pos, width, height, img_folder_path, player):
+    def __init__(self, pos, width, height, img_folder_path, reticle_pos, player):
         self.position = pos
         self.width = width
         self.height = height
@@ -25,7 +26,8 @@ class TankCannon():
         self.player = player
 
         self.body = player.tank_body
-        self.reticle = player.reticle
+        self.reticle = Reticle((reticle_pos[0] + 80, reticle_pos[1] + 15), self.player.game_map, img_folder_path, self.player)
+        self.player.reticle = self.reticle
 
         # position of the pivot on the image
         # self.image_pivot_pos = [0, 0]
@@ -40,13 +42,38 @@ class TankCannon():
         bullet_spawn_y = self.position[1] - math.sin(math.radians(self.angle)) * self.bullet_spawn_dist
         self.bullet_spawn = [bullet_spawn_x, bullet_spawn_y]
 
+        self.shooting = False
+        self.shoot_delay = 15
+        self.last_shot = 0
+
     def shoot(self):
+        # cooldown check
+        if (self.shooting):
+            self.cooldown_shoot()
+            return
+
+        # shoot bullet
+        self.shoot_bullet()
+
+        # set animation
+        self.fire_animation.reset()
+        self.animation = self.fire_animation
+
+        # set shooting state
+        self.shooting = True
+        self.reticle.img = self.reticle.shoot_img
+        self.last_shot = self.player.game_map.get_time()
+
+    def cooldown_shoot(self):
+        pass
+
+    def shoot_bullet(self):
         offset = 0
         bullet = Bullet((self.bullet_spawn[0] + offset, self.bullet_spawn[1] + offset),
                         self.player.game_map, 5, self.angle)
+
         self.player.game_map.bullet_lst.append(bullet)
-        self.fire_animation.reset()
-        self.animation = self.fire_animation
+
 
     def update(self, *args, **kwargs):
         self.position = self.body.center
@@ -56,6 +83,11 @@ class TankCannon():
         bullet_spawn_y = self.position[1] + math.sin(math.radians(self.angle)) * self.bullet_spawn_dist
         self.bullet_spawn = [bullet_spawn_x, bullet_spawn_y]
         # self.angle = (self.angle+1)%360
+
+        if (self.shooting):
+            if (self.player.game_map.get_time() >= self.last_shot + self.shoot_delay):
+                self.shooting = False
+                self.reticle.img = self.reticle.default_img
 
     def draw(self, surface):
         if(self.animation is not None):
@@ -81,34 +113,34 @@ class TankCannon():
         # draw position
         # pygame.draw.rect(surface, [250, 150, 150], (self.position[0], self.position[1], 2, 2))
 
-class StreamLined(TankCannon):
-    def __init__(self, pos, width, height, img_folder_path, player):
-        super().__init__(pos, width, height, img_folder_path, player)
-        self.player.shoot_delay = 15
-        self.fire_animation_imgs = [
-            get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined.png'), (width, height)),
-            get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation1.png'), (width, height)),
-            get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation2.png'), (width, height)),
-            get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation3.png'), (width, height)),
-        ]
-        self.fire_animation = Animation(self.fire_animation_imgs, 2, [0, 1, 2, 3, 2, 1, 0], 1)
-        self.default_img = self.fire_animation_imgs[0]
-        self.img = self.default_img
-
-    def shoot(self):
-        offsetx = randint(-5, 5)
-        offsety = randint(-5, 5)
-        bullet = Bullet((self.bullet_spawn[0] + offsetx, self.bullet_spawn[1] + offsety),
-                        self.player.game_map, 5, self.angle)
-        self.player.game_map.bullet_lst.append(bullet)
-
-        self.fire_animation.reset()
-        self.animation = self.fire_animation
+# class StreamLined(TankCannon):
+#     def __init__(self, pos, width, height, img_folder_path, player):
+#         super().__init__(pos, width, height, img_folder_path, player)
+#         self.player.shoot_delay = 15
+#         self.fire_animation_imgs = [
+#             get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined.png'), (width, height)),
+#             get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation1.png'), (width, height)),
+#             get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation2.png'), (width, height)),
+#             get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation3.png'), (width, height)),
+#         ]
+#         self.fire_animation = Animation(self.fire_animation_imgs, 2, [0, 1, 2, 3, 2, 1, 0], 1)
+#         self.default_img = self.fire_animation_imgs[0]
+#         self.img = self.default_img
+#
+#     def shoot(self):
+#         offsetx = randint(-5, 5)
+#         offsety = randint(-5, 5)
+#         bullet = Bullet((self.bullet_spawn[0] + offsetx, self.bullet_spawn[1] + offsety),
+#                         self.player.game_map, 5, self.angle)
+#         self.player.game_map.bullet_lst.append(bullet)
+#
+#         self.fire_animation.reset()
+#         self.animation = self.fire_animation
 
 class Spreader(TankCannon):
     def __init__(self, pos, width, height, img_folder_path, player):
         super().__init__(pos, width, height, img_folder_path, player)
-        self.player.shoot_delay = 30
+        self.shoot_delay = 30
         self.fire_animation_imgs = [
             get_transparent_surface(pygame.image.load(img_folder_path + 'spreader.png'), (width, height)),
             get_transparent_surface(pygame.image.load(img_folder_path + 'spreader_animation1.png'), (width, height)),
@@ -119,7 +151,7 @@ class Spreader(TankCannon):
         self.default_img = self.fire_animation_imgs[0]
         self.img = self.default_img
 
-    def shoot(self):
+    def shoot_bullet(self):
         offsetx = randint(-5, 5)
         offsety = randint(-5, 5)
         bullet1 = Bullet((self.bullet_spawn[0] + offsetx, self.bullet_spawn[1] + offsety),
@@ -132,13 +164,12 @@ class Spreader(TankCannon):
                         self.player.game_map, 5, self.angle + 15)
         self.player.game_map.bullet_lst.append(bullet3)
 
-        self.fire_animation.reset()
-        self.animation = self.fire_animation
+
 
 class Scatter(TankCannon):
     def __init__(self, pos, width, height, img_folder_path, player):
         super().__init__(pos, width, height, img_folder_path, player)
-        self.player.shoot_delay = 10
+        self.shoot_delay = 10
         self.fire_animation_imgs = [
             get_transparent_surface(pygame.image.load(img_folder_path + 'scatter.png'), (width, height)),
             get_transparent_surface(pygame.image.load(img_folder_path + 'scatter_animation1.png'), (width, height)),
@@ -149,19 +180,17 @@ class Scatter(TankCannon):
         self.default_img = self.fire_animation_imgs[0]
         self.img = self.default_img
 
-    def shoot(self):
+    def shoot_bullet(self):
         rand_angle = randint(-15, 15)
         bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
                         self.player.game_map, 5, self.angle + rand_angle)
         self.player.game_map.bullet_lst.append(bullet)
 
-        self.fire_animation.reset()
-        self.animation = self.fire_animation
 
 class Ranger(TankCannon):
     def __init__(self, pos, width, height, img_folder_path, player):
         super().__init__(pos, width, height, img_folder_path, player)
-        self.player.shoot_delay = 20
+        self.shoot_delay = 20
         self.fire_animation_imgs = [
             get_transparent_surface(pygame.image.load(img_folder_path + 'ranger.png'), (width, height)),
             get_transparent_surface(pygame.image.load(img_folder_path + 'ranger_animation1.png'), (width, height)),
@@ -172,17 +201,17 @@ class Ranger(TankCannon):
         self.default_img = self.fire_animation_imgs[0]
         self.img = self.default_img
 
-    def shoot(self):
+    def shoot_bullet(self):
         bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
                         self.player.game_map, 10, self.angle)
         self.player.game_map.bullet_lst.append(bullet)
 
-        self.fire_animation.reset()
-        self.animation = self.fire_animation
-
+# todo
+#  make a special cannon that shoots a special type of bullet
+#  the bullet should disappear after a certain amount of time
 
 weapons_table = {
-    'Streamlined' : StreamLined,
+    'Streamlined' : TankCannon,
     'Spreader' : Spreader,
     'Scatter' : Scatter,
     'Ranger' : Ranger

@@ -2,8 +2,8 @@ import math
 
 from entity import *
 class Bullet(MovableEntity):
-    def __init__(self, pos, map, speed, angle):
-        super().__init__((pos[0] - 10, pos[1] - 5, 20, 20), map, speed)
+    def __init__(self, pos, game_map, speed, angle):
+        super().__init__((pos[0] - 10, pos[1] - 5, 10, 10), game_map, speed)
         self.angle = angle
         self.img = self.img = get_transparent_surface(pygame.image.load('./assets/bullet.png'),(20,10))
 
@@ -18,6 +18,9 @@ class Bullet(MovableEntity):
     def wall_collide(self, wall):
         self.active = False
 
+    def block_collide(self, block):
+        self.active = False
+
     def update(self, *args, **kwargs):
         if(not self.active):
             self.game_map.bullet_lst.remove(self)
@@ -27,5 +30,7 @@ class Bullet(MovableEntity):
         # print(self)
 
     def draw(self, surface):
+        if(not self.active):
+            return
         rotated_img, rotated_rect = centered_rotate(self.img, self, -self.angle)
         surface.blit(rotated_img, rotated_rect)
