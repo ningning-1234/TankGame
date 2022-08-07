@@ -8,7 +8,7 @@ class Game(Page):
         super().__init__("game", True)
 
         game_map = GameMap((50, 100, 500, 500))
-        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), [(100, 175, 255), (25, 100, 255)], game_map,
+        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), 'Streamlined', game_map,
                          {pygame.K_d: 'BODY RIGHT',
                           pygame.K_s: 'BODY DOWN',
                           pygame.K_a: 'BODY LEFT',
@@ -17,7 +17,7 @@ class Game(Page):
                           }
                          )
         game_map.player1 = player1
-        # player2 = Player(2, (450, 275, 50, 50), (320, 275, 50, 50), [(255, 100, 100), (255, 25, 25)], game_map,
+        # player2 = Player(2, (450, 275, 50, 50), (320, 275, 50, 50),'Streamlined', game_map,
         #                  {pygame.K_RIGHT: 'BODY RIGHT',
         #                   pygame.K_DOWN: 'BODY DOWN',
         #                   pygame.K_LEFT: 'BODY LEFT',

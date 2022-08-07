@@ -17,8 +17,7 @@ default_kb_controls = {pygame.K_d: 'BODY RIGHT',
                        pygame.K_RIGHT: 'BODY RIGHT',
                        pygame.K_DOWN: 'BODY DOWN',
                        pygame.K_LEFT: 'BODY LEFT',
-                       pygame.K_UP: 'BODY UP',
-                       pygame.K_v: 'SHOOT'
+                       pygame.K_UP: 'BODY UP'
                        }
 default_controller_controls = {'DPAD_UP': 'BODY UP',
                                'DPAD_DOWN': 'BODY DOWN',
@@ -28,7 +27,7 @@ default_controller_controls = {'DPAD_UP': 'BODY UP',
                                }
 
 class Player():
-    def __init__(self, player_num, tank_pos, reticle_pos, colors, game_map, kb_controls=default_kb_controls,
+    def __init__(self, player_num, tank_pos, reticle_pos, weapon, game_map, kb_controls=default_kb_controls,
                  controller_controls=default_controller_controls):
         self.player_num = player_num
         self.game_map = game_map
@@ -37,16 +36,20 @@ class Player():
 
         self.folder = './assets/player' + str(player_num) + '/'
 
-        self.tank_body = Tank(tank_pos, game_map, colors[0], self.folder + 'body.png', self)
+        self.tank_body = Tank(tank_pos, game_map, self.folder + 'body.png', self)
         self.reticle = Reticle((reticle_pos[0] + 80, reticle_pos[1] + 15),
-                               game_map, colors[1],
+                               game_map,
                                self.folder + 'reticle.png',
                                self.folder + 'reticle_shoot.png', self)
+        if(weapon in weapons_table):
+            self.cannon = weapons_table[weapon](self.tank_body.center, 60, 20, self.folder, self)
+        else:
+            self.cannon = TankCannon(self.tank_body.center, 60, 20, self.folder, self)
 
         self.shooting = False
         self.shoot_delay = 15
         self.last_shot = 0
-        self.cannon = TankCannon(self.tank_body.center, 60, 20, self.folder, self)
+
 
 
     def update(self, *args, **kwargs):
@@ -60,7 +63,6 @@ class Player():
             if (self.game_map.get_time() >= self.last_shot + self.shoot_delay):
                 self.shooting = False
                 self.reticle.img = self.reticle.default_img
-
         self.tank_body.update()
         self.reticle.update()
         self.cannon.update()
@@ -144,9 +146,8 @@ class Player():
         self.reticle.draw(surface)
 
 class Tank(MovableEntity):
-    def __init__(self, pos, map, color, img_path, player):
-        super().__init__(pos, map, 6)
-        # self.color = color
+    def __init__(self, pos, map, img_path, player):
+        super().__init__(pos, map, 4)
         self.img_path = img_path
         self.img = get_transparent_surface(pygame.image.load(img_path), (self[2], self[3]))
         self.player = player
@@ -159,11 +160,8 @@ class Tank(MovableEntity):
         surface.blit(self.img, self)
 
 class Reticle(MovableEntity):
-    def __init__(self, pos, map, color, default_img_path, shoot_img_path, player):
+    def __init__(self, pos, map, default_img_path, shoot_img_path, player):
         super().__init__((pos[0], pos[1], 20, 20), map, 3)
-
-        # self.normal_color = color
-        # self.shoot_color = (200, 225, 255)
         # self.color = self.normal_color
 
         self.default_img_path = default_img_path
