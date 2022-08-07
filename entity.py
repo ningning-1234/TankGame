@@ -121,19 +121,19 @@ class MovableEntity(DrawableEntity):
             return
         # push right
         if (wall.dir == 0):
-            print('right')
+            # print('right')
             self.move_x = wall.point1[0] - self.position[0] + 1
         # push down
         if (wall.dir == 1):
-            print('down')
+            # print('down')
             self.move_y = wall.point1[1] - (self.position[1]) + 1
         # push left
         if (wall.dir == 2):
-            print('left')
+            # print('left')
             self.move_x = wall.point1[0] - (self.position[0] + self.width)
         # push up
         if (wall.dir == 3):
-            print('up')
+            # print('up')
             self.move_y = wall.point1[1] - (self.position[1] + self.height)
         self.next_pos_rect = pygame.Rect(self[0] + self.move_x, self[1] + self.move_y, self.width, self.height)
 

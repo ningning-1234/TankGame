@@ -27,32 +27,32 @@ class Wall():
         if (self.dir == 0):
             if (entity.move_dir[0] != -1):
                 return False
-            print('r', entity.left  , self.point1[0])
+            # print('r', entity.left  , self.point1[0])
             if (entity.left < self.point1[0]):
                 return False
         # bottom wall
         if (self.dir == 1):
             if (entity.move_dir[1] != -1):
                 return False
-            print('b', entity.top, self.point1[1])
+            # print('b', entity.top, self.point1[1])
             if (entity.top < self.point1[1]):
                 return False
         # left wall
         if (self.dir == 2):
             if (entity.move_dir[0] != 1):
                 return False
-            print('l', entity.right, self.point1[0])
+            # print('l', entity.right, self.point1[0])
             if (entity.right > self.point1[0]):
                 return False
         # top wall
         if (self.dir == 3):
             if (entity.move_dir[1] != 1):
                 return False
-            print('t', entity.bottom, self.point1[1])
+            # print('t', entity.bottom, self.point1[1])
             if (entity.bottom > self.point1[1]):
                 return False
         wall_line = (self.line, self.point1, self.point2)
-        print('check ' + str(self.dir), wall_line)
+        # print('check ' + str(self.dir), wall_line)
         # movement lines for each corner
         move_lines = [
             # top left
@@ -71,8 +71,8 @@ class Wall():
         for move_line in move_lines:
             # inter = line_intersect_point(move_line, wall_line)
             i = line_segment_intersect_point(move_line, wall_line, (True, True))
-            print(move_line)
-            print(i)
+            # print(move_line)
+            # print(i)
             if (i[0]):
                 return True
         return False

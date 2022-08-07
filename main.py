@@ -104,7 +104,7 @@ while (run):
     #_____Draw_____
 
     page_manager.draw(window)
-    print('==================================================================')
+    # print('==================================================================')
     # map.draw(window)
     # bullet.draw(window)
     # player1.draw(window)
