@@ -114,9 +114,19 @@ class MovableEntity(DrawableEntity):
         self.next_pos_rect = pygame.Rect(self[0] + self.move_x, self[1] + self.move_y, self.width, self.height)
 
     def block_collide(self, block):
+        '''
+        Actions taken when colliding with a block
+        :param block:
+        :return:
+        '''
         pass
 
     def wall_collide(self, wall):
+        '''
+        Actions taken when colliding with a wall
+        :param wall:
+        :return:
+        '''
         if(self.ignore_walls):
             return
         # push right
