@@ -1,4 +1,5 @@
 import math
+from explosion import *
 
 from entity import *
 class Bullet(MovableEntity):
@@ -13,13 +14,21 @@ class Bullet(MovableEntity):
         # print(self.x_shift, self.y_shift)
 
     def bound_collide(self, bound):
+        self.explode()
         self.active = False
 
     def wall_collide(self, wall):
+        self.explode()
         self.active = False
 
     def block_collide(self, block):
+        self.explode()
         self.active = False
+
+    def explode(self):
+        if(self.active == True):
+            explosion = Explosion((self[0], self[1]), 25, self.game_map, 10)
+            self.game_map.entity_lst.append(explosion)
 
     def update(self, *args, **kwargs):
         if(not self.active):
@@ -27,10 +36,24 @@ class Bullet(MovableEntity):
         self.move_x = self.x_shift
         self.move_y = self.y_shift
         super().update(args, kwargs)
-        # print(self)
 
     def draw(self, surface):
         if(not self.active):
             return
         rotated_img, rotated_rect = centered_rotate(self.img, self, -self.angle)
         surface.blit(rotated_img, rotated_rect)
+
+class Short_Bullet(Bullet):
+    def __init__(self, pos, game_map, speed, angle):
+        super().__init__(pos, game_map, speed, angle)
+        self.bullet_timer = 20
+
+    def bullet_despawn(self):
+        self.active = False
+        self.explode()
+
+    def update(self, *args, **kwargs):
+        self.bullet_timer = self.bullet_timer - 1
+        if (self.bullet_timer <= 0):
+            self.bullet_despawn()
+        super().update(args, kwargs)

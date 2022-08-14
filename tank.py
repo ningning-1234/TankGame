@@ -159,6 +159,3 @@ class Tank(MovableEntity):
     def draw(self, surface):
         # pygame.draw.rect(surface, self.color, self)
         surface.blit(self.img, self)
-
-
-

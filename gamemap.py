@@ -8,7 +8,7 @@ class Game(Page):
         super().__init__("game", True)
 
         game_map = GameMap((50, 100, 500, 500))
-        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), 'Streamlined', game_map,
+        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), 'e', game_map,
                          {pygame.K_d: 'BODY RIGHT',
                           pygame.K_s: 'BODY DOWN',
                           pygame.K_a: 'BODY LEFT',
@@ -57,6 +57,7 @@ class GameMap(PageComponent):
         self.player2 = None
         self.bullet_lst = []
         self.block_lst = []
+        self.entity_lst = []
 
         self.surface = pygame.Surface((self[2], self[3]))
 
@@ -70,6 +71,8 @@ class GameMap(PageComponent):
 
         for bullet in self.bullet_lst:
             bullet.update()
+        for entity in self.entity_lst:
+            entity.update()
 
         self.game_timer = self.game_timer+1
 
@@ -85,6 +88,10 @@ class GameMap(PageComponent):
         # draw bullets
         for bullet in self.bullet_lst:
             bullet.draw(self.surface)
+
+
+        for entity in self.entity_lst:
+            entity.draw(self.surface)
 
         # draw players
         self.player1.draw(self.surface)

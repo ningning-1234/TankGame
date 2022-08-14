@@ -14,7 +14,7 @@ class Reticle(MovableEntity):
         self.img = self.default_img
 
         self.player = player
-        self.tank_radius = 300
+        self.tank_radius = 200
 
         self.ignore_walls = True
 
