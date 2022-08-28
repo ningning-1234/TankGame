@@ -1,29 +1,29 @@
-import pygame
-from pages import *
+from engine_files.pages import *
 from tank import Player
-from wall import Block
+from engine_files.wall import Block
 
 class Game(Page):
     def __init__(self):
-        super().__init__("game", True)
+        super().__init__('game', True)
 
-        game_map = GameMap((50, 100, 500, 500))
-        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), 'e', game_map,
+        game_map = GameMap((50, 50, 500, 500))
+        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), 'RA', game_map,
                          {pygame.K_d: 'BODY RIGHT',
                           pygame.K_s: 'BODY DOWN',
                           pygame.K_a: 'BODY LEFT',
                           pygame.K_w: 'BODY UP',
-                          pygame.K_v: 'SHOOT'
+                          pygame.K_v: 'SHOOT',
+                          pygame.K_z: 'MINE'
                           }
                          )
         game_map.player1 = player1
-        # player2 = Player(2, (450, 275, 50, 50), (320, 275, 50, 50),'Streamlined', game_map,
-        #                  {pygame.K_RIGHT: 'BODY RIGHT',
-        #                   pygame.K_DOWN: 'BODY DOWN',
-        #                   pygame.K_LEFT: 'BODY LEFT',
-        #                   pygame.K_UP: 'BODY UP'}
-        #                  )
-        # game_map.player2 = player2
+        player2 = Player(2, (450, 275, 50, 50), (320, 275, 50, 50),'Streamlined', game_map,
+                         {pygame.K_RIGHT: 'BODY RIGHT',
+                          pygame.K_DOWN: 'BODY DOWN',
+                          pygame.K_LEFT: 'BODY LEFT',
+                          pygame.K_UP: 'BODY UP'}
+                         )
+        game_map.player2 = player2
 
         # bullet = Bullet((250, 250), map, 5, 0)
         # map.bullet_lst.append(bullet)

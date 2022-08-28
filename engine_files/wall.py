@@ -1,6 +1,5 @@
-import pygame
 from random import randint
-from utils import *
+from engine_files.utils import *
 
 
 # 0 right

@@ -1,10 +1,5 @@
-import pygame
-from tank import *
-from pages import PageManager
 from gamemap import *
-from bullet import *
-from wall import *
-from controller_mappings import *
+from engine_files.wall import *
 
 run=True
 

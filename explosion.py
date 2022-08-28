@@ -1,4 +1,4 @@
-from entity import *
+from engine_files.entity import *
 
 class Explosion(MovableEntity):
     def __init__(self, pos, explode_size, game_map, duration, speed=0):
@@ -13,4 +13,4 @@ class Explosion(MovableEntity):
             self.game_map.entity_lst.remove(self)
 
     def draw(self, surface):
-        pygame.draw.rect(surface, (255, 100, 100), self)
+        pygame.draw.rect(surface, (100, 100, 100), self)

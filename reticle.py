@@ -1,5 +1,5 @@
-from entity import *
-from utils import *
+from engine_files.entity import *
+from engine_files.utils import *
 
 
 class Reticle(MovableEntity):

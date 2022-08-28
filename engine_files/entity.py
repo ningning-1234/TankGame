@@ -1,6 +1,4 @@
-import pygame
-from animation import Animation
-from utils import *
+from engine_files.utils import *
 
 class DrawableEntity(pygame.Rect):
     def __init__(self, rect, game_map):
@@ -52,6 +50,7 @@ class MovableEntity(DrawableEntity):
         #     if(self.colliderect(block)):
         #         colliding_blocks.append(block)
         self.wall_check()
+        self.player_check()
 
         dist = get_hyp([0,0],[self.move_x, self.move_y])
         if(dist>self.speed):
@@ -63,6 +62,13 @@ class MovableEntity(DrawableEntity):
         self.position[1] = self.position[1] + self.move_y
         self.move_ip(round(self.position[0]-self[0]), round(self.position[1]-self[1]))
 
+    def player_check(self):
+        if(self.game_map.player1 is not None):
+            if(self.game_map.player1.tank_body.colliderect(self.next_pos_rect)):
+                self.player_collide(self.game_map.player1)
+        if (self.game_map.player2 is not None):
+            if (self.game_map.player2.tank_body.colliderect(self.next_pos_rect)):
+                self.player_collide(self.game_map.player2)
 
     def bounds_check(self):
         # left wall
@@ -94,6 +100,7 @@ class MovableEntity(DrawableEntity):
                     if (not block.colliderect(self.next_pos_rect)):
                         # print('over')
                         break
+
 
     def bound_collide(self, bound):
         '''
@@ -147,3 +154,5 @@ class MovableEntity(DrawableEntity):
             self.move_y = wall.point1[1] - (self.position[1] + self.height)
         self.next_pos_rect = pygame.Rect(self[0] + self.move_x, self[1] + self.move_y, self.width, self.height)
 
+    def player_collide(self, player):
+        pass

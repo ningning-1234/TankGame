@@ -1,14 +1,8 @@
-from utils import *
-from animation import Animation
-
-import pygame
-
-from entity import *
 from weapons import *
-from controller_mappings import *
+from mine import *
+from engine_files.controller_mappings import *
 from bullet import *
-from animation import *
-from random import randint
+from engine_files.animation import *
 
 default_kb_controls = {pygame.K_d: 'BODY RIGHT',
                        pygame.K_s: 'BODY DOWN',
@@ -23,7 +17,8 @@ default_controller_controls = {'DPAD_UP': 'BODY UP',
                                'DPAD_DOWN': 'BODY DOWN',
                                'DPAD_LEFT': 'BODY LEFT',
                                'DPAD_RIGHT': 'BODY RIGHT',
-                               'L': 'SHOOT'
+                               'L': 'SHOOT',
+                               'R': 'MINE'
                                }
 
 class Player():
@@ -46,6 +41,7 @@ class Player():
             self.cannon = weapons_table[weapon](self.tank_body.center, 60, 20, self.folder, reticle_pos, self)
         else:
             self.cannon = TankCannon(self.tank_body.center, 60, 20, self.folder, reticle_pos, self)
+        # self.mine = Mine(self.tank_body.center, self.game_map, self, 20)
 
         if(self.reticle is None):
             self.reticle = Reticle((reticle_pos[0] + 80, reticle_pos[1] + 15), game_map, self.folder, self)
@@ -82,6 +78,8 @@ class Player():
                     self.cannon.shoot()
                     # if (not self.shooting):
                     #     self.shoot()
+                if (self.kb_controls[key] == 'MINE'):
+                    self.place_mine()
 
     def parse_con_buttons(self, con_inputs):
         for button in self.controller_controls:
@@ -98,8 +96,8 @@ class Player():
                 # shoot
                 if (self.controller_controls[button] == 'SHOOT'):
                     self.cannon.shoot()
-                    # if (not self.shooting):
-                    #     self.shoot()
+                if (self.controller_controls[button] == 'MINE'):
+                    self.place_mine()
 
     def parse_con_sticks(self, con_inputs):
         joy_stick_leftX = round(con_inputs.get_axis(CON_AXIS['LEFT_H']) * 4)
@@ -140,6 +138,9 @@ class Player():
         # self.cannon.fire_animation.reset()
         # self.cannon.animation = self.cannon.fire_animation
 
+    def place_mine(self):
+        mine = Mine(self.tank_body.center, self.game_map, self, 20, 5 * 60)
+        self.game_map.bullet_lst.append(mine)
 
     def draw(self, surface):
         self.tank_body.draw(surface)
