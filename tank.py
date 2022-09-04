@@ -32,6 +32,10 @@ class Player():
         self.folder = './assets/player' + str(player_num) + '/'
 
         self.tank_body = Tank(tank_pos, game_map, self.folder + 'body.png', self)
+        self.mine_counter = 0
+        self.mine_limit = 3
+        self.place_delay = 15
+        self.last_mine = -self.place_delay - 1
 
         # self.shooting = False
         # self.shoot_delay = 15
@@ -139,8 +143,14 @@ class Player():
         # self.cannon.animation = self.cannon.fire_animation
 
     def place_mine(self):
-        mine = Mine(self.tank_body.center, self.game_map, self, 20, 5 * 60)
-        self.game_map.bullet_lst.append(mine)
+        if (not self.game_map.get_time() >= self.last_mine + self.place_delay):
+            return
+        if(self.mine_counter < self.mine_limit):
+            mine = Mine(self.tank_body.center, self.game_map, self, 100, 5 * 60)
+            self.game_map.entity_lst.append(mine)
+            self.last_mine = self.game_map.get_time()
+            self.mine_counter = self.mine_counter + 1
+        print(self.mine_counter)
 
     def draw(self, surface):
         self.tank_body.draw(surface)

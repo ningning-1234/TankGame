@@ -43,6 +43,12 @@ class TankCannon():
         self.last_shot = 0
 
     def shoot(self):
+        '''
+        Attempts to shoot a bullet. Does not shoot if on cooldown.
+        Calls self.shoot_bullet() if able to shoot.
+        Plays firing animation and changes reticle image upon successful shot.
+        :return: None
+        '''
         # cooldown check
         if (self.shooting):
             self.cooldown_shoot()
@@ -61,6 +67,11 @@ class TankCannon():
         self.last_shot = self.player.game_map.get_time()
 
     def cooldown_shoot(self):
+        '''
+        Abstract method.
+        Called on when attempting to shoot while on cooldown
+        :return: None
+        '''
         pass
 
     def shoot_bullet(self):
@@ -70,7 +81,6 @@ class TankCannon():
                         self.player.game_map, 5, self.angle, self.explosion_size)
 
         self.player.game_map.bullet_lst.append(bullet)
-
 
     def update(self, *args, **kwargs):
         self.position = self.body.center

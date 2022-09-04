@@ -28,14 +28,14 @@ class Game(Page):
         # bullet = Bullet((250, 250), map, 5, 0)
         # map.bullet_lst.append(bullet)
 
-        block1 = Block((50, 50), 1)
-        game_map.block_lst.append(block1)
-        block2 = Block((100, 0), 2)
-        game_map.block_lst.append(block2)
-        block3 = Block((50, 150), 3)
-        game_map.block_lst.append(block3)
-        block4 = Block((50, 250), 2)
-        game_map.block_lst.append(block4)
+        # block1 = Block((50, 50), 1)
+        # game_map.block_lst.append(block1)
+        # block2 = Block((100, 0), 2)
+        # game_map.block_lst.append(block2)
+        # block3 = Block((50, 150), 3)
+        # game_map.block_lst.append(block3)
+        # block4 = Block((50, 250), 2)
+        # game_map.block_lst.append(block4)
         self.add_component(game_map)
         test_btn = PageButton((20,20,30,30),
                               onclick=print,onclick_args=['click'],

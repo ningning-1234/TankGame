@@ -5,6 +5,14 @@ class DrawableEntity(pygame.Rect):
         super().__init__(rect)
         self.game_map = game_map
 
+    def entity_distance(self, entity):
+        '''
+        Calculates the distance from another entity
+        :param entity: Entity to calculate the distance from
+        :return: Distance from the entity
+        '''
+        return get_hyp(self.center, entity.center)
+
 class MovableEntity(DrawableEntity):
     def __init__(self, rect, game_map, speed):
         super().__init__(rect,game_map)
@@ -71,6 +79,10 @@ class MovableEntity(DrawableEntity):
                 self.player_collide(self.game_map.player2)
 
     def bounds_check(self):
+        '''
+
+        :return:
+        '''
         # left wall
         if (self.next_pos_rect.left < self.game_map.bounds[0]):
             self.bound_collide(2)
@@ -155,4 +167,9 @@ class MovableEntity(DrawableEntity):
         self.next_pos_rect = pygame.Rect(self[0] + self.move_x, self[1] + self.move_y, self.width, self.height)
 
     def player_collide(self, player):
+        '''
+
+        :param player:
+        :return:
+        '''
         pass
