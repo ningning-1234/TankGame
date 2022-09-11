@@ -3,8 +3,8 @@ from tank import Player
 from engine_files.wall import Block
 
 class Game(Page):
-    def __init__(self):
-        super().__init__('game', True)
+    def __init__(self,page_manager):
+        super().__init__('game', page_manager, True)
 
         game_map = GameMap((50, 50, 500, 500))
         player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), 'RA', game_map,
@@ -40,8 +40,13 @@ class Game(Page):
         test_btn = PageButton((20,20,30,30),
                               onclick=print,onclick_args=['click'],
                               onrel=print,onrel_args=['release'],
-                              draw_type='fill', color=(200,100,100))
+                              # onhover=print,onhover_args=['hover'],
+                              color=(200,100,100))
+
         self.add_component(test_btn)
+        test_text = PageText((100,20,30,30), 'test', (50,50,50))
+        self.add_component(test_text)
+
         # block1.wall_lst.remove(block1.wall_lst[0])
 
 
@@ -99,3 +104,5 @@ class GameMap(PageComponent):
             self.player2.draw(self.surface)
 
         surface.blit(self.surface, self)
+
+

@@ -1,5 +1,6 @@
 from gamemap import *
 from engine_files.wall import *
+from engine_files.pages import *
 
 run=True
 
@@ -65,7 +66,14 @@ map.block_lst.append(block4)
 '''
 
 page_manager = PageManager(BG_COLOR)
-page_manager.set_current_page(Game())
+
+def start_game(btn, page_manager):
+    page_manager.set_current_page(Game(page_manager))
+test_page = Page('test', page_manager,True)
+test_page.add_component(PageButton((0,0,50,50),color=(50,50,120),onclick=start_game, onclick_args=[page_manager]))
+
+page_manager.set_current_page(test_page)
+# page_manager.set_current_page(Game(page_manager))
 
 while (run):
     #_____get inputs_____
