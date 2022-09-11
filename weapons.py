@@ -37,7 +37,7 @@ class TankCannon():
 
         self.angle = get_angle(self.position, [self.reticle.x_pos, self.reticle.y_pos])
         # self.angle = 0
-
+        self.bullet_spawn_dist = 45
         self.shooting = False
         self.shoot_delay = 15
         self.last_shot = 0
@@ -69,12 +69,18 @@ class TankCannon():
     def cooldown_shoot(self):
         '''
         Abstract method.
-        Called on when attempting to shoot while on cooldown
+        Called on when attempting to shoot while on cooldown.
         :return: None
         '''
         pass
 
     def shoot_bullet(self):
+        '''
+        Spawns a bullet object.
+        Bullet object can have a random offset ranging between 5 and -5.
+        Called on when attempting to shoot when not on cooldown.
+        :return: None
+        '''
         offsetx = randint(-5, 5)
         offsety = randint(-5, 5)
         bullet = Bullet((self.bullet_spawn[0] + offsetx, self.bullet_spawn[1] + offsety),
@@ -83,20 +89,31 @@ class TankCannon():
         self.player.game_map.bullet_lst.append(bullet)
 
     def update(self, *args, **kwargs):
+        '''
+        Updates the cannons position, angle and bullets spawn coordinates.
+        Also checks when you can shoot.
+        :param args:
+        :param kwargs:
+        :return: None
+        '''
         self.position = self.body.center
-
         self.angle = get_angle(self.position, [self.reticle.x_pos, self.reticle.y_pos])
-        bullet_spawn_x = self.position[0] + math.cos(math.radians(self.angle)) * 45
-        bullet_spawn_y = self.position[1] + math.sin(math.radians(self.angle)) * 45
+        bullet_spawn_x = self.position[0] + math.cos(math.radians(self.angle)) *  self.bullet_spawn_dist
+        bullet_spawn_y = self.position[1] + math.sin(math.radians(self.angle)) *  self.bullet_spawn_dist
         self.bullet_spawn = [bullet_spawn_x, bullet_spawn_y]
         # self.angle = (self.angle+1)%360
-
         if (self.shooting):
             if (self.player.game_map.get_time() >= self.last_shot + self.shoot_delay):
                 self.shooting = False
                 self.reticle.img = self.reticle.default_img
 
     def draw(self, surface):
+        '''
+        Draws the cannon on surface.
+        Cannon will be drawn rotated around its pivot point.
+        :param surface: The surface the cannon will be drawn on.
+        :return: None
+        '''
         if(self.animation is not None):
             img = self.animation.animate()
             if(self.animation.complete == True):
@@ -165,6 +182,10 @@ class Spreader(TankCannon):
         self.img = self.default_img
 
     def shoot_bullet(self):
+        '''
+        Shoots 3 bullets in 3 angles.
+        :return: None
+        '''
         for g in range(0, 3):
             bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
                             self.player.game_map, 5, self.angle + self.angle_change, self.explosion_size)
@@ -191,6 +212,10 @@ class Scatter(TankCannon):
         self.img = self.default_img
 
     def shoot_bullet(self):
+        '''
+        Shoots bullets in random angle ranging between 15 to -15.
+        :return: None
+        '''
         rand_angle = randint(-15, 15)
         bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
                         self.player.game_map, 5, self.angle + rand_angle, self.explosion_size)
@@ -216,6 +241,10 @@ class Ranger(TankCannon):
         self.img = self.default_img
 
     def shoot_bullet(self):
+        '''
+        Shoots a bullet that is fast.
+        :return:
+        '''
         bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
                         self.player.game_map, 10, self.angle, self.explosion_size)
         self.player.game_map.bullet_lst.append(bullet)
@@ -224,12 +253,10 @@ class Angles(TankCannon):
     def __init__(self, pos, width, height, img_folder_path, reticle_pos, player):
         super().__init__(pos, width, height, img_folder_path, reticle_pos, player)
         self.shoot_delay = 0
-        self.bullet_spawn_dist = 0
+        self.bullet_spawn_dist = 200
         self.angle_change = 0
         self.explosion_size = 20
-        bullet_spawn_x = self.position[0] + math.cos(math.radians(self.angle)) * self.bullet_spawn_dist
-        bullet_spawn_y = self.position[1] - math.sin(math.radians(self.angle)) * self.bullet_spawn_dist
-        self.bullet_spawn = [bullet_spawn_x, bullet_spawn_y]
+
         self.fire_animation_imgs = [
             get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined.png'), (width, height)),
             get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation1.png'), (width, height)),
@@ -241,6 +268,10 @@ class Angles(TankCannon):
         self.img = self.default_img
 
     def shoot_bullet(self):
+        '''
+        Shoots bullets in 24 angles.
+        :return: None
+        '''
         for g in range(0, 24):
             bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
                             self.player.game_map, 5, self.angle + self.angle_change, self.explosion_size)
@@ -250,13 +281,10 @@ class Angles(TankCannon):
 class Wider(TankCannon):
     def __init__(self, pos, width, height, img_folder_path, reticle_pos, player):
         super().__init__(pos, width, height, img_folder_path, reticle_pos, player)
-        self.shoot_delay = 10
-        self.bullet_spawn_dist = 45
+        self.shoot_delay = 5
         self.angle_change = -25
         self.explosion_size = 25
-        bullet_spawn_x = self.position[0] + math.cos(math.radians(self.angle)) * self.bullet_spawn_dist
-        bullet_spawn_y = self.position[1] - math.sin(math.radians(self.angle)) * self.bullet_spawn_dist
-        self.bullet_spawn = [bullet_spawn_x, bullet_spawn_y]
+
         self.fire_animation_imgs = [
             get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined.png'), (width, height)),
             get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation1.png'), (width, height)),
@@ -268,6 +296,10 @@ class Wider(TankCannon):
         self.img = self.default_img
 
     def shoot_bullet(self):
+        '''
+        Shoots 50 bullets in a spread.
+        :return:
+        '''
         for g in range(0, 50):
             bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
                             self.player.game_map, 8, self.angle + self.angle_change, self.explosion_size)
@@ -277,7 +309,7 @@ class Wider(TankCannon):
 class Pulse(TankCannon):
     def __init__(self, pos, width, height, img_folder_path, reticle_pos, player):
         super().__init__(pos, width, height, img_folder_path, reticle_pos, player)
-        self.shoot_delay = 15
+        self.shoot_delay = 60
         self.bullet_spawn_dist = 0
         self.angle_change = 0
         self.explosion_size = 10
@@ -295,6 +327,10 @@ class Pulse(TankCannon):
         self.img = self.default_img
 
     def shoot_bullet(self):
+        '''
+        Shoots bullets all around itself.
+        :return:
+        '''
         for g in range(0, 359):
             bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
                             self.player.game_map, 5, self.angle + self.angle_change, self.explosion_size)
@@ -334,6 +370,36 @@ class CloseQuarters(TankCannon):
         self.bullet_spawn_dist = 45
         self.bullet_timer = 20
         self.explosion_size = 15
+
+        self.fire_animation_imgs = [
+            get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined.png'), (width, height)),
+            get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation1.png'), (width, height)),
+            get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation2.png'), (width, height)),
+            get_transparent_surface(pygame.image.load(img_folder_path + 'streamlined_animation3.png'), (width, height)),
+        ]
+        self.fire_animation = Animation(self.fire_animation_imgs, 2, [0, 1, 2, 3, 2, 1, 0], 1)
+        self.default_img = self.fire_animation_imgs[0]
+        self.img = self.default_img
+
+    def shoot_bullet(self):
+        '''
+        Shoots many short bullets in a wide spread
+        Short bullets have a timer before they explode.
+        :return: None
+        '''
+        rand_angle = randint(-45, 45)
+        bullet = Short_Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
+                        self.player.game_map, 5, self.angle + rand_angle, self.explosion_size, self.bullet_timer)
+        self.player.game_map.bullet_lst.append(bullet)
+
+class Charge(TankCannon):
+    def __init__(self, pos, width, height, img_folder_path, reticle_pos, player):
+        super().__init__(pos, width, height, img_folder_path, reticle_pos, player)
+        self.shoot_delay = 900
+        self.bullet_spawn_dist = 45
+        self.bullet_timer = 30
+        self.angle_change = -15
+        self.explosion_size = 25
         bullet_spawn_x = self.position[0] + math.cos(math.radians(self.angle)) * self.bullet_spawn_dist
         bullet_spawn_y = self.position[1] - math.sin(math.radians(self.angle)) * self.bullet_spawn_dist
         self.bullet_spawn = [bullet_spawn_x, bullet_spawn_y]
@@ -348,9 +414,15 @@ class CloseQuarters(TankCannon):
         self.img = self.default_img
 
     def shoot_bullet(self):
-        rand_angle = randint(-45, 45)
+        for g in range(0, 15):
+            bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
+                            self.player.game_map, 8, self.angle + self.angle_change, self.explosion_size)
+            self.player.game_map.bullet_lst.append(bullet)
+            self.angle = self.angle + 2
+
+    def cooldown_shoot(self):
         bullet = Short_Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
-                        self.player.game_map, 5, self.angle + rand_angle, self.explosion_size, self.bullet_timer)
+                              self.player.game_map, 5, self.angle, self.explosion_size, self.bullet_timer)
         self.player.game_map.bullet_lst.append(bullet)
 
 # todo
@@ -359,7 +431,7 @@ class CloseQuarters(TankCannon):
 
 weapons_table = {
     'Streamlined' : TankCannon,
-    'SL' : CloseQuarters,
+    'SL' : TankCannon,
     'Spreader' : Spreader,
     'SP' : Spreader,
     'Scatter' : Scatter,
@@ -368,6 +440,8 @@ weapons_table = {
     'RA' : Ranger,
     'CloseQuarters' : CloseQuarters,
     'CQ' : CloseQuarters,
+    'Charge' : Charge,
+    'CH' : Charge,
     'GGAngles' : Angles,
     'GGWider' : Wider,
     'GGPulse' : Pulse,

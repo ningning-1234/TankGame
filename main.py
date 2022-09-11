@@ -1,6 +1,6 @@
-from gamemap import *
-from engine_files.wall import *
 from engine_files.pages import *
+from gamemap import Game
+from menu_pages.selection_menu import SelectionPage
 
 run=True
 
@@ -34,45 +34,15 @@ BG_COLOR = pygame.color.Color('0x505050')
 clock = pygame.time.Clock()
 FPS = 60
 
-'''
-map = Map((50,50,500,500))
-player1 = Player(1, (100, 275, 50, 50), (100, 275, 50, 50), [(100, 175, 255),  (25, 100, 255)], map,
-                 {pygame.K_d: 'BODY RIGHT',
-                  pygame.K_s: 'BODY DOWN',
-                  pygame.K_a: 'BODY LEFT',
-                  pygame.K_w: 'BODY UP'}
-                 )
-map.player1 = player1
-player2 = Player(2, (450, 275, 50, 50), (320, 275, 50, 50), [(255, 100, 100), (255, 25, 25)],  map,
-                 {pygame.K_RIGHT: 'BODY RIGHT',
-                  pygame.K_DOWN: 'BODY DOWN',
-                  pygame.K_LEFT: 'BODY LEFT',
-                  pygame.K_UP: 'BODY UP'}
-                 )
-map.player2 = player2
+page_manager = PageManager(BG_COLOR,(WIN_WIDTH, WIN_HEIGHT))
 
+# def start_game(page_manager,**kwargs):
+#     page_manager.set_current_page(Game(page_manager))
+# test_page = Page('test', page_manager,True)
+# test_page.add_component(PageButton((0,0,50,50),color=(50,50,120),onclick=start_game, onclick_args=[page_manager]))
+# page_manager.set_current_page(test_page)
 
-# bullet = Bullet((250, 250), map, 5, 0)
-# map.bullet_lst.append(bullet)
-
-block1 = Block((50, 50), 1)
-map.block_lst.append(block1)
-block2 = Block((200, 0), 2)
-map.block_lst.append(block2)
-block3 = Block((50, 150), 3)
-map.block_lst.append(block3)
-block4 = Block((50, 250), 2)
-map.block_lst.append(block4)
-'''
-
-page_manager = PageManager(BG_COLOR)
-
-def start_game(btn, page_manager):
-    page_manager.set_current_page(Game(page_manager))
-test_page = Page('test', page_manager,True)
-test_page.add_component(PageButton((0,0,50,50),color=(50,50,120),onclick=start_game, onclick_args=[page_manager]))
-
-page_manager.set_current_page(test_page)
+page_manager.set_current_page(SelectionPage(page_manager))
 # page_manager.set_current_page(Game(page_manager))
 
 while (run):

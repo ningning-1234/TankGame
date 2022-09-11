@@ -7,7 +7,7 @@ class Game(Page):
         super().__init__('game', page_manager, True)
 
         game_map = GameMap((50, 50, 500, 500))
-        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), 'RA', game_map,
+        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), 'GGWider', game_map,
                          {pygame.K_d: 'BODY RIGHT',
                           pygame.K_s: 'BODY DOWN',
                           pygame.K_a: 'BODY LEFT',
@@ -37,9 +37,10 @@ class Game(Page):
         # block4 = Block((50, 250), 2)
         # game_map.block_lst.append(block4)
         self.add_component(game_map)
+
         test_btn = PageButton((20,20,30,30),
-                              onclick=print,onclick_args=['click'],
-                              onrel=print,onrel_args=['release'],
+                              # onclick=print,onclick_args=['click'],
+                              # onrel=print,onrel_args=['release'],
                               # onhover=print,onhover_args=['hover'],
                               color=(200,100,100))
 
@@ -67,9 +68,19 @@ class GameMap(PageComponent):
         self.surface = pygame.Surface((self[2], self[3]))
 
     def get_time(self):
+        '''
+        returns the game time.
+        :return: self.game_timer
+        '''
         return self.game_timer
 
     def update(self, *args, **kwargs):
+        '''
+        Updates all players, bullets and entities.
+        :param args:
+        :param kwargs:
+        :return: None
+        '''
         self.player1.update(kb_inputs=kwargs['kb_inputs'], controller_inputs=kwargs['controller_inputs1'])
         if(self.player2 is not None):
             self.player2.update(kb_inputs=kwargs['kb_inputs'], controller_inputs=kwargs['controller_inputs2'])
@@ -82,6 +93,13 @@ class GameMap(PageComponent):
         self.game_timer = self.game_timer+1
 
     def draw(self, surface, *args, **kwargs):
+        '''
+        Updates blocks, bullets, entities and players.
+        :param surface: surface: The surface blocks, bullets, entities and players will be drawn on.
+        :param args:
+        :param kwargs:
+        :return: None
+        '''
         # draw map
         # pygame.draw.rect(self.surface, self.color, self)
         self.surface.fill(self.color)
@@ -93,7 +111,6 @@ class GameMap(PageComponent):
         # draw bullets
         for bullet in self.bullet_lst:
             bullet.draw(self.surface)
-
 
         for entity in self.entity_lst:
             entity.draw(self.surface)

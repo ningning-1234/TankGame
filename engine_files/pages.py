@@ -1,8 +1,9 @@
 import pygame
+from engine_files.utils import get_transparent_surface
 
 
 class PageManager:
-    def __init__(self, bg_color):
+    def __init__(self, bg_color, window_size):
         '''
         Controls the flow of all the pages.
         Responsible for drawing and updating the current page
@@ -11,6 +12,7 @@ class PageManager:
         self.bg_color = bg_color
         self.current_page = None
         self.page_archive = {}
+        self.window_size = window_size
 
     def set_current_page(self, page):
         if (self.current_page is not None):
@@ -33,7 +35,7 @@ class PageManager:
 
 
 class Page:
-    def __init__(self, name, page_manager, archive):
+    def __init__(self, name, page_manager, archive, bg_color=None, bg_img=None):
         '''
         Object to do display a page onto the screen. Contains page components
         :param name: Name of the page
@@ -45,7 +47,8 @@ class Page:
         self.components = []
 
         self.page_manager = page_manager
-
+        self.bg_color = bg_color
+        self.bg_img = bg_img
     def add_component(self, component):
         self.components.append(component)
         component.page = self
@@ -55,6 +58,11 @@ class Page:
             component.update(*args, **kwargs)
 
     def draw(self, surface):
+        if (self.bg_color is not None):
+            surface.fill(self.bg_color)
+        if (self.bg_img is not None):
+            surface.blit(self.bg_img, (0, 0))
+
         for component in self.components:
             component.draw(surface)
 
@@ -196,13 +204,13 @@ class PageButton(PageComponent):
         self.prev_clicked = clicked_btns
 
     def onclick(self, btn_number):
-        self.onclick_func(btn_number, *self.onclick_args, **self.onclick_kwargs)
+        self.onclick_func(*self.onclick_args,btn_number=btn_number, **self.onclick_kwargs)
 
     def onrelease(self, btn_number):
-        self.onrel_func(btn_number, *self.onrel_args, **self.onrel_kwargs)
+        self.onrel_func(*self.onrel_args, btn_number=btn_number, **self.onrel_kwargs)
 
     def onhold(self, btn_number):
-        self.onrel_func(btn_number, *self.onrel_args, **self.onrel_kwargs)
+        self.onrel_func(*self.onrel_args,btn_number=btn_number, **self.onrel_kwargs)
 
 
 class PagePercentBar(PageComponent):

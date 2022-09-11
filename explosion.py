@@ -8,9 +8,20 @@ class Explosion(MovableEntity):
         self.duration = duration
 
     def update(self, *args, **kwargs):
+        '''
+        Updates explosion timer.
+        :param args:
+        :param kwargs:
+        :return: None
+        '''
         self.duration = self.duration - 1
         if (self.duration <= 0):
             self.game_map.entity_lst.remove(self)
 
     def draw(self, surface):
+        '''
+        Draws explosions on surface
+        :param surface: The surface the explosion will be drawn on.
+        :return: None
+        '''
         pygame.draw.rect(surface, (100, 100, 100), self)

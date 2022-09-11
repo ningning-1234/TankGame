@@ -22,11 +22,22 @@ class Reticle(MovableEntity):
         self.y_pos = self.centery
 
     def update(self, *args, **kwargs):
+        '''
+        Updates reticle position.
+        :param args:
+        :param kwargs:
+        :return: None
+        '''
         super().update(args, kwargs)
         self.x_pos = self.centerx
         self.y_pos = self.centery
 
     def move(self):
+        '''
+        Moves the reticle depending on the input.
+        Reticle can't go past a certain distance.
+        :return: None
+        '''
         # calculate distance from main body
         body = self.player.tank_body
         dist = get_hyp([body.centerx, body.centery], [(self.centerx + self.move_x), (self.centery + self.move_y)])
@@ -41,5 +52,10 @@ class Reticle(MovableEntity):
         super().move()
 
     def draw(self, surface):
+        '''
+        Draws reticle on surface.
+        :param surface: The surface the reticle will be drawn on.
+        :return: None
+        '''
         # pygame.draw.rect(surface, self.color, self)
         surface.blit(self.img, self)

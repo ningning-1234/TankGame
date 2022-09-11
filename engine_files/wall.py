@@ -19,7 +19,7 @@ class Wall():
         '''
         Check if an entity's movement will collide with a wall
         :param entity:
-        :return:
+        :return: None
         '''
         # direction check
         # right wall
@@ -117,6 +117,11 @@ class Block(pygame.Rect):
         pass
 
     def draw(self, surface):
+        '''
+        Draws blocks on surface
+        :param surface: The surface the block will be drawn on.
+        :return: None
+        '''
         surface.blit(self.img, self)
 
 # todo

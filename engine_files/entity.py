@@ -31,6 +31,12 @@ class MovableEntity(DrawableEntity):
         self.active = True
 
     def update(self, *args, **kwargs):
+        '''
+        Updates entity
+        :param args:
+        :param kwargs:
+        :return: None
+        '''
         self.move_dir = [0, 0]
         self.move_angle = 0
         # moving right
@@ -51,6 +57,11 @@ class MovableEntity(DrawableEntity):
         self.move_y = 0
 
     def move(self):
+        '''
+        Moves the entity.
+        Checks if the entity can or can not move.
+        :return: None
+        '''
         # map bounds check
         self.bounds_check()
         # colliding_blocks = []
@@ -71,6 +82,10 @@ class MovableEntity(DrawableEntity):
         self.move_ip(round(self.position[0]-self[0]), round(self.position[1]-self[1]))
 
     def player_check(self):
+        '''
+        Checks if anything is colliding with a player.
+        :return: None
+        '''
         if(self.game_map.player1 is not None):
             if(self.game_map.player1.tank_body.colliderect(self.next_pos_rect)):
                 self.player_collide(self.game_map.player1)
@@ -80,8 +95,8 @@ class MovableEntity(DrawableEntity):
 
     def bounds_check(self):
         '''
-
-        :return:
+        Checks if anything is colliding with a bound.
+        :return: None
         '''
         # left wall
         if (self.next_pos_rect.left < self.game_map.bounds[0]):
@@ -97,6 +112,10 @@ class MovableEntity(DrawableEntity):
             self.bound_collide(1)
 
     def wall_check(self):
+        '''
+        Checks if anything is colliding with a wall.
+        :return: None
+        '''
         # for block in self.game_map.block_lst:
         #     for wall in block.wall_lst:
         #         if (wall.entity_move_collide(self)):
@@ -116,7 +135,7 @@ class MovableEntity(DrawableEntity):
 
     def bound_collide(self, bound):
         '''
-        Actions taken when colliding with a map bound
+        Actions taken when colliding with a map bound.
         :param bound:
         :return:
         '''
@@ -134,7 +153,7 @@ class MovableEntity(DrawableEntity):
 
     def block_collide(self, block):
         '''
-        Actions taken when colliding with a block
+        Actions taken when colliding with a block.
         :param block:
         :return:
         '''
@@ -142,7 +161,7 @@ class MovableEntity(DrawableEntity):
 
     def wall_collide(self, wall):
         '''
-        Actions taken when colliding with a wall
+        Actions taken when colliding with a wall.
         :param wall:
         :return:
         '''
@@ -168,7 +187,7 @@ class MovableEntity(DrawableEntity):
 
     def player_collide(self, player):
         '''
-
+        Actions taken when colliding with a player
         :param player:
         :return:
         '''

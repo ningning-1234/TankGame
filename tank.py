@@ -51,6 +51,12 @@ class Player():
             self.reticle = Reticle((reticle_pos[0] + 80, reticle_pos[1] + 15), game_map, self.folder, self)
 
     def update(self, *args, **kwargs):
+        '''
+        Updates player inputs.
+        :param args:
+        :param kwargs:
+        :return: None
+        '''
         if (kwargs['kb_inputs'] is not None):
             self.parse_kb_inputs(kwargs['kb_inputs'])
         if (kwargs['controller_inputs'] is not None):
@@ -67,6 +73,11 @@ class Player():
         self.cannon.update()
 
     def parse_kb_inputs(self, kb_inputs):
+        '''
+        Does something the tank depending on the input.
+        :param kb_inputs: inputs for the keyboard.
+        :return: None
+        '''
         for key in self.kb_controls:
             if (kb_inputs[key]):
                 if (self.kb_controls[key] == 'BODY RIGHT'):
@@ -86,6 +97,11 @@ class Player():
                     self.place_mine()
 
     def parse_con_buttons(self, con_inputs):
+        '''
+        Does something depending on the input.
+        :param con_inputs: inputs for the controller.
+        :return: None
+        '''
         for button in self.controller_controls:
             if (con_inputs.get_button(CON_BUTTONS[button])):
                 # movement
@@ -104,6 +120,11 @@ class Player():
                     self.place_mine()
 
     def parse_con_sticks(self, con_inputs):
+        '''
+        Moves the tank depending on where you move the joy stick.
+        :param con_inputs: inputs for the controller.
+        :return: None
+        '''
         joy_stick_leftX = round(con_inputs.get_axis(CON_AXIS['LEFT_H']) * 4)
         joy_stick_leftY = round(con_inputs.get_axis(CON_AXIS['LEFT_V']) * 4)
         # left/right
@@ -125,6 +146,12 @@ class Player():
             self.reticle.move_y = round(self.reticle.speed * (joy_stick_rightY / 4))
 
     def shoot(self):
+        '''
+        Resets last_shot.
+        Shooting it set to True.
+        reticle changes to it's shooting image.
+        :return: None
+        '''
         self.last_shot = self.game_map.get_time()
         # print(self.last_shot)
         self.shooting = True
@@ -143,6 +170,11 @@ class Player():
         # self.cannon.animation = self.cannon.fire_animation
 
     def place_mine(self):
+        '''
+        Spawns a mine object.
+        Called on when attempting to place a mine when not on cooldown.
+        :return: None
+        '''
         if (not self.game_map.get_time() >= self.last_mine + self.place_delay):
             return
         if(self.mine_counter < self.mine_limit):
@@ -153,6 +185,11 @@ class Player():
         print(self.mine_counter)
 
     def draw(self, surface):
+        '''
+        Draws the tank body, cannon and reticle on surface.
+        :param surface: The surface the tank body, cannon and reticle will be drawn on.
+        :return: None
+        '''
         self.tank_body.draw(surface)
         self.cannon.draw(surface)
         self.reticle.draw(surface)
@@ -168,5 +205,10 @@ class Tank(MovableEntity):
         super().update(args, kwargs)
 
     def draw(self, surface):
+        '''
+        Draws tanks on surface.
+        :param surface: The surface the tank will be drawn on.
+        :return: None
+        '''
         # pygame.draw.rect(surface, self.color, self)
         surface.blit(self.img, self)
