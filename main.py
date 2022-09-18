@@ -1,6 +1,6 @@
 from engine_files.pages import *
 from gamemap import Game
-from menu_pages.selection_menu import SelectionPage
+from menu_pages.selection_menu import *
 
 run=True
 
@@ -41,8 +41,7 @@ page_manager = PageManager(BG_COLOR,(WIN_WIDTH, WIN_HEIGHT))
 # test_page = Page('test', page_manager,True)
 # test_page.add_component(PageButton((0,0,50,50),color=(50,50,120),onclick=start_game, onclick_args=[page_manager]))
 # page_manager.set_current_page(test_page)
-
-page_manager.set_current_page(SelectionPage(page_manager))
+page_manager.set_current_page(TitlePage(page_manager))
 # page_manager.set_current_page(Game(page_manager))
 
 while (run):

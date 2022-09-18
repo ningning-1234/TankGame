@@ -111,12 +111,15 @@ class PageComponent(pygame.Rect):
         self.onhover_func(*self.onhover_args, **self.onhover_kwargs)
 
     def draw(self, surface):
+        draw = False
         if (self.color is not None):
             self.surface.fill(self.color)
+            draw = True
         if (self.img is not None):
             self.surface.blit(self.img, (0, 0))
-
-        surface.blit(self.surface, self)
+            draw = True
+        if (draw):
+            surface.blit(self.surface, self)
 
 
 class PageText(PageComponent):

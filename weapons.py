@@ -343,6 +343,7 @@ class Spiral(TankCannon):
         self.shoot_delay = 0
         self.bullet_spawn_dist = 0
         self.angle_change = 0
+        self.explosion_size = 10
         bullet_spawn_x = self.position[0] + math.cos(math.radians(self.angle)) * self.bullet_spawn_dist
         bullet_spawn_y = self.position[1] - math.sin(math.radians(self.angle)) * self.bullet_spawn_dist
         self.bullet_spawn = [bullet_spawn_x, bullet_spawn_y]
@@ -359,9 +360,9 @@ class Spiral(TankCannon):
     def shoot_bullet(self):
         for g in range(0, 24):
             bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
-                            self.player.game_map, 5, self.angle + self.angle_change)
+                            self.player.game_map, 5, self.angle + self.angle_change, self.explosion_size)
             self.player.game_map.bullet_lst.append(bullet)
-        self.angle = self.angle + 5
+        self.angle = self.angle + 24
 
 class CloseQuarters(TankCannon):
     def __init__(self, pos, width, height, img_folder_path, reticle_pos, player):

@@ -3,11 +3,11 @@ from tank import Player
 from engine_files.wall import Block
 
 class Game(Page):
-    def __init__(self,page_manager):
+    def __init__(self,page_manager, p1_weapon='Streamlined', p2_weapon='Streamlined'):
         super().__init__('game', page_manager, True)
 
         game_map = GameMap((50, 50, 500, 500))
-        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), 'GGWider', game_map,
+        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), p1_weapon, game_map,
                          {pygame.K_d: 'BODY RIGHT',
                           pygame.K_s: 'BODY DOWN',
                           pygame.K_a: 'BODY LEFT',
@@ -17,7 +17,7 @@ class Game(Page):
                           }
                          )
         game_map.player1 = player1
-        player2 = Player(2, (450, 275, 50, 50), (320, 275, 50, 50),'Streamlined', game_map,
+        player2 = Player(2, (450, 275, 50, 50), (320, 275, 50, 50), p2_weapon, game_map,
                          {pygame.K_RIGHT: 'BODY RIGHT',
                           pygame.K_DOWN: 'BODY DOWN',
                           pygame.K_LEFT: 'BODY LEFT',
