@@ -82,7 +82,9 @@ class Page:
 class PageComponent(pygame.Rect):
     def __init__(self, pos,
                  color=None, img=None,
-                 onhover=None, onhover_args=[], onhover_kwargs={}
+                 border_size=0, border_color=(0,0,0),
+                 onhover=None, onhover_args=[], onhover_kwargs={},
+                 unhover=None, unhover_args=[], unhover_kwargs={},
                  ):
         super().__init__(pos)
         self.surface = pygame.Surface((self[2], self[3]))
@@ -90,25 +92,48 @@ class PageComponent(pygame.Rect):
         self.zindex = 0  # higher zindex will be drawn on top of lower zindex
         # self.draw_type = draw_type
 
+        self.hovered = False
         self.hover_function = False
         if (onhover is not None):
             self.hover_function = True
             self.onhover_func = onhover
             self.onhover_args = onhover_args
             self.onhover_kwargs = onhover_kwargs
+        self.unhover_function = False
+        if (unhover is not None):
+            self.unhover_function = True
+            self.unhover_func = unhover
+            self.unhover_args = unhover_args
+            self.unhover_kwargs = unhover_kwargs
+
 
         self.color = color
         self.img = img
+
+        self.border_size = border_size
+        self.border_color = border_color
 
     def update(self, *args, **kwargs):
         mouse_inputs = kwargs['mouse_inputs']
         mouse_coords = mouse_inputs['mouse_coords']
         if (self.collidepoint(mouse_coords)):
+            new_hover = False
+            if(not self.hovered):
+                new_hover = True
+            self.hovered = True
             if (self.hover_function):
                 self.hover()
+        else:
+            if(self.hovered):
+                self.hovered = False
+                if(self.unhover_function):
+                    self.unhover()
 
     def hover(self):
-        self.onhover_func(*self.onhover_args, **self.onhover_kwargs)
+        self.onhover_func(*self.onhover_args,**self.onhover_kwargs)
+
+    def unhover(self):
+        self.unhover_func(*self.unhover_args, **self.unhover_kwargs)
 
     def draw(self, surface):
         draw = False
@@ -118,6 +143,9 @@ class PageComponent(pygame.Rect):
         if (self.img is not None):
             self.surface.blit(self.img, (0, 0))
             draw = True
+        if (self.border_size>0):
+            pygame.draw.rect(self.surface,self.border_color, (0,0,self.width,self.height), self.border_size)
+            draw=True
         if (draw):
             surface.blit(self.surface, self)
 
@@ -180,8 +208,11 @@ class PageButton(PageComponent):
 
         clicked_btns = []
         released_btns = []
-
         if (self.collidepoint(mouse_coords)):
+            new_hover = False
+            if (not self.hovered):
+                new_hover = True
+            self.hovered = True
             btn_num = 0
             # get clicks
             for btn in mouse_inputs['mouse_btn']:
@@ -195,6 +226,10 @@ class PageButton(PageComponent):
                 if (btn not in clicked_btns):
                     released_btns.append(btn)
         else:
+            if (self.hovered):
+                self.hovered = False
+                if (self.unhover_function):
+                    self.unhover()
             released_btns = self.prev_clicked.copy()
 
         if (len(clicked_btns) > 0):

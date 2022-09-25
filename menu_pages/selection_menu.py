@@ -47,27 +47,58 @@ class TitlePage(Page):
 class SelectionPage(Page):
     def __init__(self, page_manager):
         super().__init__('selection', page_manager, False,bg_color=(100,100,100))
+
+        self.selected_weps = ['Streamlined', 'Streamlined']
+        self.selected_btns = [None, None]
+
+        def start_onhover(btn):
+            btn.color = (255,0,0)
+        def start_unhover(btn):
+            btn.color=(30,80,30)
+
+        # start button
         start_btn = PageButton((page_manager.window_size[0]/2-40,page_manager.window_size[1]*0.75, 80,40),
                                color=(30,80,30),
                                onclick=self.start_game
                                )
+        start_btn.hover_function = True
+        start_btn.onhover_func = start_onhover
+        start_btn.onhover_args = [start_btn]
+        start_btn.onhover_kwargs = {}
+
+        start_btn.unhover_function = True
+        start_btn.unhover_func = start_unhover
+        start_btn.unhover_args = [start_btn]
+        start_btn.unhover_kwargs = {}
+
         self.add_component(start_btn)
 
+        # player title
         player_txt_offset = [50,50]
         self.add_component(PageText((player_txt_offset[0],player_txt_offset[1],80,40),
                                     'Player 1', (0,0,0)))
         self.add_component(PageText((page_manager.window_size[0] - player_txt_offset[0]-80, player_txt_offset[1], 80, 40),
                                     'Player 2', (0, 0, 0)))
+
+        #todo
+        # when hovering over a button, change its background to a darker shade of gray
+        # when unhovered, change it back to its original color
+        # when selected, the background should stay that gray
+        # when deselected, it should change back to the original color
+
         p1_left = 50
         wep_v_offset = 40
-        self.p1_weapon = 'Streamlined'
-        self.p2_weapon = 'Streamlined'
         for wep in weapons_list:
-            temp_btn = PageButton((p1_left - 5, player_txt_offset[1]+wep_v_offset + 5, 70, 30), color=(70, 70, 70))
+            temp_btn = PageButton((p1_left - 5, player_txt_offset[1]+wep_v_offset + 5, 70, 30),
+                                  color=(70, 70, 70), border_color=(255,255,0))
             temp_btn.click_function = True
             temp_btn.onclick_func = self.weapon_select_button
-            temp_btn.onclick_args = [1, wep]
+            temp_btn.onclick_args = [1, wep, temp_btn]
             temp_btn.onclick_kwargs = {}
+
+            if(wep==self.selected_weps[0]):
+                self.selected_btns[0] = temp_btn
+                temp_btn.border_size = 2
 
             self.add_component(temp_btn)
             temp_img = get_transparent_surface(pygame.image.load('assets/player1/'+weapons_list[wep]),(60,20))
@@ -80,6 +111,18 @@ class SelectionPage(Page):
         p2_left = page_manager.window_size[0] - 50 - 160
         wep_v_offset = 40
         for wep in weapons_list:
+            temp_btn = PageButton((p2_left + 115, player_txt_offset[1] + wep_v_offset + 5, 70, 30),
+                                  color=(70, 70, 70), border_color=(255,255,0))
+            temp_btn.click_function = True
+            temp_btn.onclick_func = self.weapon_select_button
+            temp_btn.onclick_args = [2, wep, temp_btn]
+            temp_btn.onclick_kwargs = {}
+
+            if (wep == self.selected_weps[1]):
+                self.selected_btns[1] = temp_btn
+                temp_btn.border_size = 2
+
+            self.add_component(temp_btn)
             temp_img = get_transparent_surface(pygame.image.load('assets/player2/'+weapons_list[wep]),(60,20))
             self.add_component(PageComponent((p2_left + 120, player_txt_offset[1]+wep_v_offset+10, 60, 20),
                                              img=temp_img))
@@ -87,13 +130,14 @@ class SelectionPage(Page):
                                         wep, (0, 0, 0)))
             wep_v_offset = wep_v_offset + 40
 
-    def weapon_select_button(self, player, weapon, **kwargs):
-        if (player == 1):
-            self.p1_weapon = weapon
-            print('Player1 weapon set to ' + weapon)
-        if (player == 2):
-            self.p2_weapon = weapon
-            print('Player2 weapon set to ' + weapon)
+    def weapon_select_button(self, player, weapon, button, **kwargs):
+        self.selected_weps[player-1] = weapon
+        print(button)
+        self.selected_btns[player-1].border_size = 0
+        self.selected_btns[player-1] = button
+        button.border_size = 2
+        print('Player1 weapon set to ' + weapon)
+
 
     def start_game(self, **kwargs):
-        self.page_manager.set_current_page(Game(self.page_manager, self.p1_weapon, self.p2_weapon))
+        self.page_manager.set_current_page(Game(self.page_manager, self.selected_weps[0], self.selected_weps[1]))
