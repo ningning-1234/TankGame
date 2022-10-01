@@ -46,7 +46,8 @@ page_manager.set_current_page(TitlePage(page_manager))
 
 while (run):
     #_____get inputs_____
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT:
             run = False
 
@@ -70,7 +71,9 @@ while (run):
     page_manager.update(kb_inputs=keys,
                         mouse_inputs=mouse_inputs,
                         controller_inputs1=controller1_buttons,
-                        controller_inputs2=controller2_buttons)
+                        controller_inputs2=controller2_buttons,
+                        events=events
+                        )
     # map.update(kb_inputs=keys, controller_inputs1=controller1_buttons, controller_inputs2=controller2_buttons)
 
     #_____Draw_____
