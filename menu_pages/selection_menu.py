@@ -72,18 +72,14 @@ class SelectionPage(Page):
         self.btn_lst=[[],[]]
 
         # player 1
-        self.add_component(PageText((player_txt_offset[0],player_txt_offset[1],80,40),
-                                    'Player 1', self.white_color))
-        p1_left = 80
-        wep_v_offset = 40
-        n = 0
-        for wep in weapons_list:
-            temp_btn = PageButton((p1_left - 5, player_txt_offset[1]+wep_v_offset + 5, 70, 30),
+
+        def selection_menu(p_num, p_left, btn_offset, txt_offset):
+            temp_btn = PageButton((p_left - 5 + btn_offset, player_txt_offset[1] + wep_v_offset + 5, 70, 30),
                                   color=(70, 70, 70), border_color=self.white_color)
 
             temp_btn.click_function = True
             temp_btn.onclick_func = self.weapon_select_button
-            temp_btn.onclick_args = [1, wep, temp_btn]
+            temp_btn.onclick_args = [p_num, wep, temp_btn]
             temp_btn.onclick_kwargs = {}
 
             temp_btn.hover_function = True
@@ -98,61 +94,42 @@ class SelectionPage(Page):
 
             temp_btn.player_btn_id = n
 
-            if(wep==self.selected_weps[0]):
-                self.selected_btns[0] = temp_btn
-                self.hover_btn_id[0] = n
+            if (wep == self.selected_weps[p_num-1]):
+                self.selected_btns[p_num-1] = temp_btn
+                self.hover_btn_id[p_num-1] = n
                 temp_btn.color = (100, 100, 100)
                 temp_btn.border_size = 1
 
             self.add_component(temp_btn)
-            self.btn_lst[0].append(temp_btn)
-            temp_img = get_transparent_surface(pygame.image.load('assets/player1/'+weapons_list[wep]),(60,20))
-            self.add_component(PageComponent((p1_left,player_txt_offset[1]+wep_v_offset+10, 60,20),
+            self.btn_lst[p_num-1].append(temp_btn)
+            temp_img = get_transparent_surface(pygame.image.load('assets/player' + str(p_num) + '/' + weapons_list[wep]), (60, 20))
+            self.add_component(PageComponent((p_left + btn_offset, player_txt_offset[1] + wep_v_offset + 10, 60, 20),
                                              img=temp_img))
-            self.add_component(PageText((p1_left + 80, player_txt_offset[1]+wep_v_offset+10, 80, 40),
+            self.add_component(PageText((p_left + txt_offset, player_txt_offset[1] + wep_v_offset + 10, 80, 40),
                                         wep, self.white_color))
+
+        self.add_component(PageText((player_txt_offset[0], player_txt_offset[1], 80, 40),
+                                    'Player 1', self.white_color))
+
+        p1_left = 80
+        wep_v_offset = 40
+        n = 0
+        for wep in weapons_list:
+            selection_menu(1, p1_left, 0, 80)
             wep_v_offset = wep_v_offset + 40
-            n = n+1
+            n = n + 1
 
         # player 2
         self.add_component(PageText((page_manager.window_size[0] - player_txt_offset[0]-64, player_txt_offset[1], 80, 40),
                                     'Player 2', self.white_color))
+
         p2_left = page_manager.window_size[0] - 259
         wep_v_offset = 40
         n=0
         for wep in weapons_list:
-            temp_btn = PageButton((p2_left + 115, player_txt_offset[1] + wep_v_offset + 5, 70, 30),
-                                  color=(70, 70, 70), border_color=self.white_color)
-            temp_btn.click_function = True
-            temp_btn.onclick_func = self.weapon_select_button
-            temp_btn.onclick_args = [2, wep, temp_btn]
-            temp_btn.onclick_kwargs = {}
-
-            temp_btn.hover_function = True
-            temp_btn.onhover_func = temp_onhover
-            temp_btn.onhover_args = [temp_btn]
-            temp_btn.onhover_kwargs = {}
-
-            temp_btn.unhover_function = True
-            temp_btn.unhover_func = temp_unhover
-            temp_btn.unhover_args = [temp_btn]
-            temp_btn.unhover_kwargs = {}
-
-            temp_btn.player_btn_id = n
-
-            if (wep == self.selected_weps[1]):
-                self.selected_btns[1] = temp_btn
-                temp_btn.border_size = 1
-
-            self.add_component(temp_btn)
-            self.btn_lst[1].append(temp_btn)
-            temp_img = get_transparent_surface(pygame.image.load('assets/player2/'+weapons_list[wep]),(60,20))
-            self.add_component(PageComponent((p2_left + 120, player_txt_offset[1]+wep_v_offset+10, 60, 20),
-                                             img=temp_img))
-            self.add_component(PageText((p2_left - 10, player_txt_offset[1]+wep_v_offset+10, 80, 40),
-                                        wep, self.white_color))
+            selection_menu(2, p2_left, 120, -15)
             wep_v_offset = wep_v_offset + 40
-            n=n+1
+            n = n + 1
 
          # start button
         start_btn = PageButton((page_manager.window_size[0] / 2 - 40, page_manager.window_size[1] * 0.85, 80, 40),
@@ -172,6 +149,12 @@ class SelectionPage(Page):
 
         self.add_component(start_btn)
 
+    def scroll(self, player_num, direction):
+        # self.btn_lst[player_num-1][self.hover_btn_id[player_num-1]].unhover()
+        self.hover_btn_id[player_num-1] = (self.hover_btn_id[player_num-1] + direction) % len(self.btn_lst[player_num-1])
+        self.btn_lst[player_num-1][self.hover_btn_id[player_num-1]].onclick(-1)
+        # self.weapon_select_button(player_num, '', self.btn_lst[player_num-1][self.hover_btn_id[player_num-1]])
+
     def update(self, *args, **kwargs):
         super().update(*args, **kwargs)
         controller1 = kwargs['controller_inputs1']
@@ -182,22 +165,25 @@ class SelectionPage(Page):
             if(event.type == pygame.JOYBUTTONDOWN):
                 if(event.joy==0):
                     if(event.button==CON_BUTTONS['DPAD_DOWN']):
-                        self.btn_lst[0][self.hover_btn_id[0]].unhover()
-                        self.hover_btn_id[0] = (self.hover_btn_id[0] + 1) % len(self.btn_lst[0])
-                        self.btn_lst[0][self.hover_btn_id[0]].hover()
-                    if (event.button==CON_BUTTONS['DPAD_UP']):
-                        self.btn_lst[0][self.hover_btn_id[0]].unhover()
-                        self.hover_btn_id[0] = (self.hover_btn_id[0] - 1) % len(self.btn_lst[0])
-                        self.btn_lst[0][self.hover_btn_id[0]].hover()
+                        self.scroll(1, 1)
+                    if(event.button==CON_BUTTONS['DPAD_UP']):
+                        self.scroll(1, -1)
+                    if(event.button==CON_BUTTONS['PLUS']):
+                        self.start_game()
             if(event.type == pygame.KEYDOWN):
                 if(event.key==pygame.K_s):
-                    self.btn_lst[0][self.hover_btn_id[0]].unhover()
-                    self.hover_btn_id[0] = (self.hover_btn_id[0] + 1) % len(self.btn_lst[0])
-                    self.btn_lst[0][self.hover_btn_id[0]].hover()
+                    self.scroll(1, 1)
+                if (event.key == pygame.K_w):
+                    self.scroll(1, -1)
+                if (event.key == pygame.K_DOWN):
+                    self.scroll(2, 1)
+                if (event.key == pygame.K_UP):
+                    self.scroll(2, -1)
+                if (event.key == pygame.K_RETURN):
+                    self.start_game()
+
         # todo:
-        #  let the hover selection work for all keyboard inputs
-        #  let arrow keys work for player 2
-        #  put the repeated code in a function
+        #  add a random option to the weapon select
 
     #when a weapon select button is pressed
     def weapon_select_button(self, player, weapon, button, **kwargs):
