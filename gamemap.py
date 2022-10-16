@@ -1,3 +1,5 @@
+import pygame.image
+
 from engine_files.pages import *
 from tank import Player
 from engine_files.wall import Block
@@ -43,10 +45,13 @@ class Game(Page):
                               # onrel=print,onrel_args=['release'],
                               # onhover=print,onhover_args=['hover'],
                               color=(200,100,100))
+        # self.add_component(test_btn)
 
-        self.add_component(test_btn)
         test_text = PageText((100,20,30,30), 'test', (50,50,50))
-        self.add_component(test_text)
+        # self.add_component(test_text)
+
+        test_bar = PagePercentBar((0,0,300,50), 0, 0.75, color=(200,200,0), img=pygame.image.load('assets/test_bar.png'))
+        self.add_component(test_bar)
 
         # block1.wall_lst.remove(block1.wall_lst[0])
 

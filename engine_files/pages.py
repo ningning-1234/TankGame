@@ -252,37 +252,59 @@ class PageButton(PageComponent):
 
 
 class PagePercentBar(PageComponent):
-    def __init__(self, pos, fill_percent=1,
-                 fill_color=None, fill_img=None,
-                 horizontal=True, default_dir=True, **kwargs):
+    def __init__(self, pos,drain_dir, bar_percent=1, **kwargs):
         super().__init__(pos, **kwargs)
 
-        self.fill_color = fill_color
-        self.fill_img = fill_img
-        self.fill_surface = pygame.Surface((self[2], self[3]))
-
-        self.horizontal = horizontal
-        self.default_dir = True
-        self.fill_percent = max(min(fill_percent, 1), 0)
-        self.fill_width = self[2]
-        self.fill_height = self[3]
-        if (self.horizontal):
-            self.fill_width = self.fill_width * self.fill_percent
-        else:
-            self.fill_height = self.fill_height * self.fill_percent
+        # right, down, left, up
+        self.drain_dir = drain_dir
+        self.bar_percent = max(min(bar_percent, 1), 0)
+        self.max_width = self[2]
+        self.max_height = self[3]
 
     def update_fill(self, new_percent):
-        self.fill_percent = max(min(new_percent, 1), 0)
-        if (self.horizontal):
-            self.fill_width = self.fill_width * self.fill_percent
-        else:
-            self.fill_height = self.fill_height * self.fill_percent
+        self.bar_percent = max(min(new_percent, 1), 0)
+        # right, down, left, up
+        if (self.drain_dir==0):
+            self.fill_width = self.bar_width * self.fill_percent
+        elif (self.drain_dir==1):
+            self.fill_height = self.bar_height * self.fill_percent
+        elif (self.drain_dir==2):
+            self.fill_width = self.bar_width * self.fill_percent
+        elif (self.drain_dir==3):
+            self.fill_height = self.bar_height * self.fill_percent
 
     def draw(self, surface):
-        super.draw(surface)
-
+        draw = False
         if (self.color is not None):
             self.surface.fill(self.color)
+            draw = True
         if (self.img is not None):
             self.surface.blit(self.img, (0, 0))
-        surface.blit(self.fill_surface, self)
+            draw = True
+        if (self.border_size > 0):
+            pygame.draw.rect(self.surface, self.border_color, (0, 0, self.width, self.height), self.border_size)
+            draw = True
+        if (not draw):
+            return
+        # right
+        if (self.drain_dir==0):
+            cropped = pygame.Surface((self.max_width * self.bar_percent, self.max_height))
+            cropped.blit(self.surface, (self.max_width * (self.bar_percent-1), 0))
+            blit_pos = [self.max_width * (1-self.bar_percent), 0]
+        # down
+        if (self.drain_dir==1):
+            cropped = pygame.Surface((self.max_width, self.max_height * self.bar_percent))
+            cropped.blit(self.surface, (0,  self.max_height * (self.bar_percent-1)))
+            blit_pos = [0, self.max_height * (1-self.bar_percent)]
+        # left
+        if (self.drain_dir==2):
+            cropped = pygame.Surface((self.max_width * self.bar_percent, self.max_height))
+            cropped.blit(self.surface, (0, 0))
+            blit_pos = [0, 0]
+        # up
+        if (self.drain_dir==3):
+            cropped = pygame.Surface((self.max_width, self.max_height* self.bar_percent))
+            cropped.blit(self.surface, (0, 0))
+            blit_pos = [0, 0]
+        if (draw):
+            surface.blit(cropped, blit_pos)
