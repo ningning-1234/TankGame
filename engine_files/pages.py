@@ -264,14 +264,6 @@ class PagePercentBar(PageComponent):
     def update_fill(self, new_percent):
         self.bar_percent = max(min(new_percent, 1), 0)
         # right, down, left, up
-        if (self.drain_dir==0):
-            self.fill_width = self.bar_width * self.fill_percent
-        elif (self.drain_dir==1):
-            self.fill_height = self.bar_height * self.fill_percent
-        elif (self.drain_dir==2):
-            self.fill_width = self.bar_width * self.fill_percent
-        elif (self.drain_dir==3):
-            self.fill_height = self.bar_height * self.fill_percent
 
     def draw(self, surface):
         draw = False
@@ -290,21 +282,21 @@ class PagePercentBar(PageComponent):
         if (self.drain_dir==0):
             cropped = pygame.Surface((self.max_width * self.bar_percent, self.max_height))
             cropped.blit(self.surface, (self.max_width * (self.bar_percent-1), 0))
-            blit_pos = [self.max_width * (1-self.bar_percent), 0]
+            blit_pos = [self[0] + self.max_width * (1-self.bar_percent), self[1]]
         # down
         if (self.drain_dir==1):
             cropped = pygame.Surface((self.max_width, self.max_height * self.bar_percent))
             cropped.blit(self.surface, (0,  self.max_height * (self.bar_percent-1)))
-            blit_pos = [0, self.max_height * (1-self.bar_percent)]
+            blit_pos = [self[0], self[1] + self.max_height * (1-self.bar_percent)]
         # left
         if (self.drain_dir==2):
             cropped = pygame.Surface((self.max_width * self.bar_percent, self.max_height))
             cropped.blit(self.surface, (0, 0))
-            blit_pos = [0, 0]
+            blit_pos = [self[0], self[1]]
         # up
         if (self.drain_dir==3):
             cropped = pygame.Surface((self.max_width, self.max_height* self.bar_percent))
             cropped.blit(self.surface, (0, 0))
-            blit_pos = [0, 0]
+            blit_pos = [self[0], self[1]]
         if (draw):
             surface.blit(cropped, blit_pos)

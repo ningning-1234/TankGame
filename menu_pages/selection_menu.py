@@ -4,6 +4,7 @@ from engine_files.pages import *
 from gamemap import Game
 from engine_files.utils import get_transparent_surface
 from engine_files.controller_mappings import *
+from random import randint
 
 weapons_list = {
     'Streamlined' : 'streamlined.png',
@@ -12,6 +13,9 @@ weapons_list = {
     'Ranger' : 'ranger.png',
     'CloseQuarters' : 'streamlined.png',
     'Charge' : 'streamlined.png',
+    'Random' : 'streamlined.png'
+}
+GGweapons_list = {
     'GGAngles' : 'streamlined.png',
     'GGWider' : 'streamlined.png',
     'GGPulse' : 'streamlined.png',
@@ -48,9 +52,7 @@ class TitlePage(Page):
 
 class SelectionPage(Page):
     def __init__(self, page_manager):
-        super().__init__('selection', page_manager, False,
-                         # bg_img=pygame.image.load('assets/selection_screen.png')
-                         )
+        super().__init__('selection', page_manager, False,bg_img=pygame.image.load('assets/selection_screen.png'))
 
         self.selected_weps = ['Streamlined', 'Streamlined']
         self.selected_btns = [None, None]
@@ -184,11 +186,22 @@ class SelectionPage(Page):
                 if (event.key == pygame.K_RETURN):
                     self.start_game()
 
-        # todo:
-        #  add a random option to the weapon select
-
     #when a weapon select button is pressed
     def weapon_select_button(self, player, weapon, button, **kwargs):
+        if(weapon == 'Random'):
+            rand_wep = randint(1, len(weapons_list)-1)
+            if (rand_wep == 1):
+                weapon = 'Streamlined'
+            if (rand_wep == 2):
+                weapon = 'Spreader'
+            if (rand_wep == 3):
+                weapon = 'Scatter'
+            if (rand_wep == 4):
+                weapon = 'Ranger'
+            if (rand_wep == 5):
+                weapon = 'CloseQuarters'
+            if (rand_wep == 6):
+                weapon = 'Charge'
         self.selected_weps[player-1] = weapon
         self.selected_btns[player-1].border_size = 0
         self.selected_btns[player-1].color = (70, 70, 70)

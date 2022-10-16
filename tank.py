@@ -22,7 +22,8 @@ default_controller_controls = {'DPAD_UP': 'BODY UP',
                                }
 
 class Player():
-    def __init__(self, player_num, tank_pos, reticle_pos, weapon, game_map, kb_controls=default_kb_controls,
+    def __init__(self, player_num, tank_pos, reticle_pos, weapon, game_map, health_bar,
+                 kb_controls=default_kb_controls,
                  controller_controls=default_controller_controls):
         self.player_num = player_num
         self.game_map = game_map
@@ -32,21 +33,25 @@ class Player():
         self.folder = './assets/player' + str(player_num) + '/'
 
         self.tank_body = Tank(tank_pos, game_map, self.folder + 'body.png', self)
+
+        # health
+        self.health = 100
+        self.max_health = 100
+        self.health_bar = health_bar
+
+        # mine
         self.mine_counter = 0
         self.mine_limit = 3
         self.place_delay = 15
         self.last_mine = -self.place_delay - 1
 
-        # self.shooting = False
-        # self.shoot_delay = 15
-        # self.last_shot = 0
+        # weapon
         self.reticle = None
         if(weapon in weapons_table):
             self.cannon = weapons_table[weapon](self.tank_body.center, 60, 20, self.folder, reticle_pos, self)
         else:
             self.cannon = TankCannon(self.tank_body.center, 60, 20, self.folder, reticle_pos, self)
         # self.mine = Mine(self.tank_body.center, self.game_map, self, 20)
-
         if(self.reticle is None):
             self.reticle = Reticle((reticle_pos[0] + 80, reticle_pos[1] + 15), game_map, self.folder, self)
 
@@ -71,6 +76,7 @@ class Player():
         self.tank_body.update()
         self.reticle.update()
         self.cannon.update()
+        self.health_bar.update_fill(self.health/self.max_health)
 
     def parse_kb_inputs(self, kb_inputs):
         '''
@@ -158,17 +164,6 @@ class Player():
         self.reticle.img = self.reticle.shoot_img
         self.cannon.shoot()
 
-        # bullet = Bullet((self.cannon.bullet_spawn[0] + offset, self.cannon.bullet_spawn[1] + offset),
-        #                 self.game_map, 5, self.cannon.angle)
-        # self.game_map.bullet_lst.append(bullet)
-
-        # bullet = Bullet((self.cannon.bullet_spawn), self.map, 5, self.cannon.angle)
-        # self.map.bullet_lst.append(bullet)
-        # bullet = Bullet((self.cannon.bullet_spawn), self.map, 5, self.cannon.angle)
-        # self.map.bullet_lst.append(bullet)
-        # self.cannon.fire_animation.reset()
-        # self.cannon.animation = self.cannon.fire_animation
-
     def place_mine(self):
         '''
         Spawns a mine object.
@@ -182,7 +177,10 @@ class Player():
             self.game_map.entity_lst.append(mine)
             self.last_mine = self.game_map.get_time()
             self.mine_counter = self.mine_counter + 1
-        print(self.mine_counter)
+
+    def take_damage(self, damage, source):
+        print(str(self.player_num)+" takes " + str(damage)+" damage from " + str(source))
+        self.health = self.health - damage
 
     def draw(self, surface):
         '''

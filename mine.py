@@ -22,7 +22,8 @@ class Mine(MovableEntity):
         :return: None
         '''
         pos = self.explosion_size / 2
-        explosion = Explosion((self.centerx - pos, self.centery - pos), self.explosion_size, self.game_map, 10)
+        explosion = Explosion((self.centerx - pos, self.centery - pos),
+                              self.explosion_size, self.game_map,  10, self.player)
         self.game_map.entity_lst.append(explosion)
         self.active = False
 
@@ -33,6 +34,8 @@ class Mine(MovableEntity):
         :param player: The player that the mine is colliding with.
         :return: None
         '''
+        if(not self.active):
+            return
         if (self.player_collide_timer <= 0):
             self.explode()
 
@@ -43,6 +46,8 @@ class Mine(MovableEntity):
         :param bullet: The bullet that the mine is colliding with.
         :return: None
         '''
+        if(not self.active):
+            return
         self.explode()
         bullet.active = False
 

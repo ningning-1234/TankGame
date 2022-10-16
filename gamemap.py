@@ -9,7 +9,10 @@ class Game(Page):
         super().__init__('game', page_manager, True)
 
         game_map = GameMap((50, 50, 500, 500))
-        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), p1_weapon, game_map,
+        p1_bar = PagePercentBar((0,0,300,50), 0, 1, color=(50,50,255))
+        self.add_component(p1_bar)
+
+        player1 = Player(1, (0, 0, 50, 50), (100, 275, 50, 50), p1_weapon, game_map,p1_bar,
                          {pygame.K_d: 'BODY RIGHT',
                           pygame.K_s: 'BODY DOWN',
                           pygame.K_a: 'BODY LEFT',
@@ -19,11 +22,17 @@ class Game(Page):
                           }
                          )
         game_map.player1 = player1
-        player2 = Player(2, (450, 275, 50, 50), (320, 275, 50, 50), p2_weapon, game_map,
+
+        p2_bar = PagePercentBar((300, 0, 300, 50), 2, 1, color=(255, 50, 50))
+        self.add_component(p2_bar)
+        player2 = Player(2, (450, 275, 50, 50), (320, 275, 50, 50), p2_weapon, game_map, p2_bar,
                          {pygame.K_RIGHT: 'BODY RIGHT',
                           pygame.K_DOWN: 'BODY DOWN',
                           pygame.K_LEFT: 'BODY LEFT',
-                          pygame.K_UP: 'BODY UP'}
+                          pygame.K_UP: 'BODY UP',
+                          pygame.K_n: 'SHOOT',
+                          pygame.K_m: 'MINE'
+                          }
                          )
         game_map.player2 = player2
 
@@ -49,12 +58,19 @@ class Game(Page):
 
         test_text = PageText((100,20,30,30), 'test', (50,50,50))
         # self.add_component(test_text)
+        # self.percent = 0
+        # self.test_bar = PagePercentBar((0,0,300,50), 3, self.percent, color=(200,200,0), img=pygame.image.load('assets/test_bar.png'))
+        # self.add_component(self.test_bar)
 
-        test_bar = PagePercentBar((0,0,300,50), 0, 0.75, color=(200,200,0), img=pygame.image.load('assets/test_bar.png'))
-        self.add_component(test_bar)
+
 
         # block1.wall_lst.remove(block1.wall_lst[0])
-
+    def update(self, *args, **kwargs):
+        super().update(*args,**kwargs)
+        # self.percent = self.percent + 0.01
+        # if(self.percent>1):
+        #     self.percent=0
+        # self.test_bar.update_fill(self.percent)
 
 class GameMap(PageComponent):
     def __init__(self, pos):

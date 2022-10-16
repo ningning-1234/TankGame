@@ -2,7 +2,7 @@ from explosion import *
 
 from engine_files.entity import *
 class Bullet(MovableEntity):
-    def __init__(self, pos, game_map, speed, angle, explosion_size):
+    def __init__(self, pos, game_map, speed, angle, explosion_size, owner):
         super().__init__((pos[0] - 10, pos[1] - 5, 10, 10), game_map, speed)
         self.angle = angle
         self.img = self.img = get_transparent_surface(pygame.image.load('./assets/bullet.png'),(20, 10))
@@ -11,7 +11,11 @@ class Bullet(MovableEntity):
         self.y_shift = math.sin(math.radians(self.angle))*self.speed
         self.explosion_size = explosion_size
 
+        self.owner = owner
+        # whether the bullet can hit its owner
         self.self_damage = False
+        self.damage = 5
+        self.collide_entities = []
 
     def bound_collide(self, bound):
         '''
@@ -20,6 +24,8 @@ class Bullet(MovableEntity):
         :param bound: The bound that the bullet is colliding with.
         :return: None
         '''
+        if(not self.active):
+            return
         self.explode()
         self.active = False
 
@@ -30,8 +36,12 @@ class Bullet(MovableEntity):
         :param wall: The wall that the bullet is colliding with.
         :return: None
         '''
+        if(not self.active):
+            return
         self.explode()
         self.active = False
+        if (wall not in self.collide_entities):
+            self.collide_entities.append(wall)
 
     def block_collide(self, block):
         '''
@@ -40,8 +50,13 @@ class Bullet(MovableEntity):
         :param block: The bound that the bullet is colliding with.
         :return: None
         '''
+        if(not self.active):
+            return
+
         self.explode()
         self.active = False
+        if (block not in self.collide_entities):
+            self.collide_entities.append(block)
 
     def player_collide(self, player):
         '''
@@ -50,8 +65,16 @@ class Bullet(MovableEntity):
         :param player: The bound that the bullet is colliding with.
         :return: None
         '''
+        if(not self.active):
+            return
         self.explode()
         self.active = False
+        if (not self.self_damage):
+            if (player == self.owner):
+                return
+        if(player not in self.collide_entities):
+            player.take_damage(self.damage, self)
+            self.collide_entities.append(player)
 
     def explode(self):
         '''
@@ -60,7 +83,10 @@ class Bullet(MovableEntity):
         '''
         if(self.active == True):
             pos = self.explosion_size / 2
-            explosion = Explosion((self.centerx - pos, self.centery - pos), self.explosion_size, self.game_map, 10)
+            explosion = Explosion((self.centerx - pos, self.centery - pos),
+                                  self.explosion_size, self.game_map, 10, self.owner)
+            explosion.self_damage = False
+            explosion.damage = 2
             self.game_map.entity_lst.append(explosion)
 
     def update(self, *args, **kwargs):
