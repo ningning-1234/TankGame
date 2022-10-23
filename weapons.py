@@ -1,5 +1,5 @@
 from random import randint
-from bullet import Bullet, Short_Bullet
+from bullet import *
 from engine_files.animation import Animation
 from reticle import *
 
@@ -9,7 +9,6 @@ class TankCannon():
         self.position = pos
         self.width = width
         self.height = height
-
         self.explosion_size = 30
 
         self.fire_animation_imgs = [
@@ -84,7 +83,7 @@ class TankCannon():
         offsetx = randint(-5, 5)
         offsety = randint(-5, 5)
         bullet = Bullet((self.bullet_spawn[0] + offsetx, self.bullet_spawn[1] + offsety),
-                        self.player.game_map, 5, self.angle, self.explosion_size, self.player)
+                        self.player.game_map, 5, self.angle, 5, self.explosion_size, self.player)
 
         self.player.game_map.bullet_lst.append(bullet)
 
@@ -167,6 +166,7 @@ class Spreader(TankCannon):
         self.shoot_delay = 30
         self.bullet_spawn_dist = 45
         self.angle_change = -15
+        self.damage = 4
         self.explosion_size = 25
         bullet_spawn_x = self.position[0] + math.cos(math.radians(self.angle)) * self.bullet_spawn_dist
         bullet_spawn_y = self.position[1] - math.sin(math.radians(self.angle)) * self.bullet_spawn_dist
@@ -188,7 +188,7 @@ class Spreader(TankCannon):
         '''
         for g in range(0, 3):
             bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
-                            self.player.game_map, 5, self.angle + self.angle_change, self.explosion_size, self.player)
+                            self.player.game_map, 5, self.angle + self.angle_change, 4, self.explosion_size, self.player)
             self.player.game_map.bullet_lst.append(bullet)
             self.angle = self.angle + 15
 
@@ -218,7 +218,7 @@ class Scatter(TankCannon):
         '''
         rand_angle = randint(-15, 15)
         bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
-                        self.player.game_map, 5, self.angle + rand_angle, self.explosion_size, self.player)
+                        self.player.game_map, 5, self.angle + rand_angle, 4, self.explosion_size, self.player)
         self.player.game_map.bullet_lst.append(bullet)
 
 class Ranger(TankCannon):
@@ -245,8 +245,8 @@ class Ranger(TankCannon):
         Shoots a bullet that is fast.
         :return:
         '''
-        bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
-                        self.player.game_map, 10, self.angle, self.explosion_size, self.player)
+        bullet = Ranger_Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
+                                self.player.game_map, 10, self.angle, 2, self.explosion_size, self.player, 3, 1, 30)
         self.player.game_map.bullet_lst.append(bullet)
 
 class Angles(TankCannon):
@@ -384,13 +384,13 @@ class CloseQuarters(TankCannon):
 
     def shoot_bullet(self):
         '''
-        Shoots many short bullets in a wide spread
+        Shoots many short bullets in a wide spread.
         Short bullets have a timer before they explode.
         :return: None
         '''
         rand_angle = randint(-45, 45)
         bullet = Short_Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
-                        self.player.game_map, 5, self.angle + rand_angle, self.explosion_size, self.bullet_timer, self.player)
+                              self.player.game_map, 5, self.angle + rand_angle, 1, self.explosion_size, self.player, self.bullet_timer)
         self.player.game_map.bullet_lst.append(bullet)
 
 class Charge(TankCannon):
@@ -417,13 +417,41 @@ class Charge(TankCannon):
     def shoot_bullet(self):
         for g in range(0, 30):
             bullet = Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
-                            self.player.game_map, 8, self.angle + self.angle_change, self.explosion_size, self.player)
+                            self.player.game_map, 8, self.angle + self.angle_change, 2, self.explosion_size, self.player)
             self.player.game_map.bullet_lst.append(bullet)
             self.angle = self.angle + 1
 
     def cooldown_shoot(self):
         bullet = Short_Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
                               self.player.game_map, 5, self.angle, self.explosion_size, self.bullet_timer)
+        self.player.game_map.bullet_lst.append(bullet)
+
+class Homer(TankCannon):
+    def __init__(self, pos, width, height, img_folder_path, reticle_pos, player):
+        super().__init__(pos, width, height, img_folder_path, reticle_pos, player)
+        self.shoot_delay = 10
+        self.bullet_spawn_dist = 45
+        self.explosion_size = 20
+        bullet_spawn_x = self.position[0] + math.cos(math.radians(self.angle)) * self.bullet_spawn_dist
+        bullet_spawn_y = self.position[1] - math.sin(math.radians(self.angle)) * self.bullet_spawn_dist
+        self.bullet_spawn = [bullet_spawn_x, bullet_spawn_y]
+        self.fire_animation_imgs = [
+            get_transparent_surface(pygame.image.load(img_folder_path + 'scatter.png'), (width, height)),
+            get_transparent_surface(pygame.image.load(img_folder_path + 'scatter_animation1.png'), (width, height)),
+            get_transparent_surface(pygame.image.load(img_folder_path + 'scatter_animation2.png'), (width, height)),
+            get_transparent_surface(pygame.image.load(img_folder_path + 'scatter_animation3.png'), (width, height)),
+        ]
+        self.fire_animation = Animation(self.fire_animation_imgs, 2, [0, 1, 2, 3, 2, 1, 0], 1)
+        self.default_img = self.fire_animation_imgs[0]
+        self.img = self.default_img
+
+    def shoot_bullet(self):
+        if (self.player.player_num == 1):
+            target = self.player.game_map.player2.tank_body
+        else:
+            target = self.player.game_map.player1.tank_body
+        bullet = Homing_Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
+                        self.player.game_map, 5, self.angle, 4, self.explosion_size, self.player, target)
         self.player.game_map.bullet_lst.append(bullet)
 
 weapons_table = {
@@ -439,6 +467,8 @@ weapons_table = {
     'CQ' : CloseQuarters,
     'Charge' : Charge,
     'CH' : Charge,
+    'Homer' : Homer,
+    'Ho' : Homer,
     'GGAngles' : Angles,
     'GGWider' : Wider,
     'GGPulse' : Pulse,

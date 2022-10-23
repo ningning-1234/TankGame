@@ -35,8 +35,8 @@ class Player():
         self.tank_body = Tank(tank_pos, game_map, self.folder + 'body.png', self)
 
         # health
-        self.health = 100
-        self.max_health = 100
+        self.health = 300
+        self.max_health = 300
         self.health_bar = health_bar
 
         # mine

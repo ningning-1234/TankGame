@@ -10,7 +10,7 @@ class Explosion(MovableEntity):
         self.owner = owner
         # whether the bullet can hit its owner
         self.self_damage = True
-        self.damage = 20
+        self.damage = 25
         self.collide_entities = []
 
     def player_collide(self, player):

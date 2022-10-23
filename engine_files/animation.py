@@ -29,7 +29,7 @@ class Animation:
         if (not self.complete):
             current_frame = self.sequence[self.timer // self.frame_duration]
             self.timer = self.timer + 1
-        print(current_frame)
+        # print(current_frame)
 
         if (self.timer >= self.timer_lim):
             self.timer = 0

@@ -13,7 +13,8 @@ weapons_list = {
     'Ranger' : 'ranger.png',
     'CloseQuarters' : 'streamlined.png',
     'Charge' : 'streamlined.png',
-    'Random' : 'streamlined.png'
+    'Homer' : 'streamlined.png',
+    'Random' : 'Random.png'
 }
 GGweapons_list = {
     'GGAngles' : 'streamlined.png',
@@ -106,7 +107,10 @@ class SelectionPage(Page):
 
             self.add_component(temp_btn)
             self.btn_lst[p_num-1].append(temp_btn)
-            temp_img = get_transparent_surface(pygame.image.load('assets/player' + str(p_num) + '/' + weapons_list[wep]), (60, 20))
+            if(weapons_list[wep]=='Random.png'):
+                temp_img = get_transparent_surface(pygame.image.load('assets/' + weapons_list[wep]), (60, 20))
+            else:
+                temp_img = get_transparent_surface(pygame.image.load('assets/player' + str(p_num) + '/' + weapons_list[wep]), (60, 20))
             self.add_component(PageComponent((p_left + btn_offset, player_txt_offset[1] + wep_v_offset + 10, 60, 20),
                                              img=temp_img))
             self.add_component(PageText((p_left + txt_offset, player_txt_offset[1] + wep_v_offset + 10, 80, 40),
