@@ -59,3 +59,26 @@ class Reticle(MovableEntity):
         '''
         # pygame.draw.rect(surface, self.color, self)
         surface.blit(self.img, self)
+
+class Target_Reticle(Reticle):
+    def __init__(self, pos, game_map, img_folder_path, player):
+        super().__init__(pos, game_map, img_folder_path, player)
+        # self.color = self.normal_color
+
+        self.default_img_path = img_folder_path + 'target_reticle.png'
+        self.shoot_img_path = 'assets/target_reticle_shoot.png'
+        self.default_img = get_transparent_surface(pygame.image.load(self.default_img_path), (self[2], self[3]))
+        self.shoot_img = get_transparent_surface(pygame.image.load(self.shoot_img_path), (self[2], self[3]))
+        self.img = self.default_img
+
+        self.player = player
+        self.tank_radius = 200
+
+        self.ignore_walls = True
+
+        self.x_pos = self.centerx
+        self.y_pos = self.centery
+
+    def move(self):
+        super(Reticle, self).move()
+

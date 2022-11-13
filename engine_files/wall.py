@@ -123,9 +123,3 @@ class Block(pygame.Rect):
         :return: None
         '''
         surface.blit(self.img, self)
-
-# todo
-#  give the blocks an image
-#  create 3 images
-#  give each block a random image
-#  resize the images to fit the block

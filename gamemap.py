@@ -2,7 +2,7 @@ import pygame.image
 
 from engine_files.pages import *
 from tank import Player
-from engine_files.wall import Block
+from game_blocks import *
 
 class Game(Page):
     def __init__(self,page_manager, p1_weapon='Streamlined', p2_weapon='Streamlined'):
@@ -36,33 +36,32 @@ class Game(Page):
                          )
         game_map.player2 = player2
 
-        # bullet = Bullet((250, 250), map, 5, 0)
-        # map.bullet_lst.append(bullet)
-
-        # block1 = Block((50, 50), 1)
+        # block1 = GameBlock((50, 50), 1)
         # game_map.block_lst.append(block1)
-        # block2 = Block((100, 0), 2)
+        # block2 = GameBlock((100, 0), 2)
         # game_map.block_lst.append(block2)
-        # block3 = Block((50, 150), 3)
+        # block3 = GameBlock((50, 150), 3)
         # game_map.block_lst.append(block3)
-        # block4 = Block((50, 250), 2)
-        # game_map.block_lst.append(block4)
-        self.add_component(game_map)
+        block4 = BreakableBlock((50, 250), game_map, 2, 50)
+        game_map.block_lst.append(block4)
 
-        test_btn = PageButton((20,20,30,30),
-                              # onclick=print,onclick_args=['click'],
+        self.add_component(game_map)
+        def selection_return(**kwargs):
+            self.page_manager.set_current_page(self.page_manager.page_archive['selection'])
+            print(self.page_manager.page_archive)
+
+        test_btn = PageButton((0,50,50,50),
+                              onclick=selection_return,
                               # onrel=print,onrel_args=['release'],
                               # onhover=print,onhover_args=['hover'],
                               color=(200,100,100))
-        # self.add_component(test_btn)
+        self.add_component(test_btn)
 
         test_text = PageText((100,20,30,30), 'test', (50,50,50))
         # self.add_component(test_text)
         # self.percent = 0
         # self.test_bar = PagePercentBar((0,0,300,50), 3, self.percent, color=(200,200,0), img=pygame.image.load('assets/test_bar.png'))
         # self.add_component(self.test_bar)
-
-
 
         # block1.wall_lst.remove(block1.wall_lst[0])
     def update(self, *args, **kwargs):
@@ -142,5 +141,3 @@ class GameMap(PageComponent):
             self.player2.draw(self.surface)
 
         surface.blit(self.surface, self)
-
-

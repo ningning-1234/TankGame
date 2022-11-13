@@ -1,5 +1,6 @@
 from engine_files.entity import *
 
+
 class Explosion(MovableEntity):
     def __init__(self, pos, explode_size, game_map, duration, owner, speed=0):
         pos = (pos[0], pos[1], explode_size, explode_size)
@@ -20,6 +21,11 @@ class Explosion(MovableEntity):
         if(player not in self.collide_entities):
             player.take_damage(self.damage, self)
             self.collide_entities.append(player)
+
+    def block_collide(self, block):
+        if (block not in self.collide_entities):
+            block.entity_collide(self)
+            self.collide_entities.append(block)
 
     def update(self, *args, **kwargs):
         '''

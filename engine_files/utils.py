@@ -284,8 +284,6 @@ def line_segment_intersect_point(line_seg1, line_seg2, inclusive=(False, False))
 
 def get_point_angle(p1, p2, rad = True):
     angle = math.atan2(p2[1]-p1[1], p2[0]-p1[0])
-    if(p1[0]>p2[0]):
-        angle = angle + math.pi
     if(rad == False):
         angle = math.degrees(angle)
     return angle

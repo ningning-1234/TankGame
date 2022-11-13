@@ -14,6 +14,9 @@ weapons_list = {
     'CloseQuarters' : 'streamlined.png',
     'Charge' : 'streamlined.png',
     'Homer' : 'streamlined.png',
+    'Detonator' : 'streamlined.png',
+    'Barrage' : 'streamlined.png',
+    'Guided' : 'streamlined.png',
     'Random' : 'Random.png'
 }
 GGweapons_list = {
@@ -53,7 +56,7 @@ class TitlePage(Page):
 
 class SelectionPage(Page):
     def __init__(self, page_manager):
-        super().__init__('selection', page_manager, False,bg_img=pygame.image.load('assets/selection_screen.png'))
+        super().__init__('selection', page_manager, True, bg_img=pygame.image.load('assets/selection_screen.png'))
 
         self.selected_weps = ['Streamlined', 'Streamlined']
         self.selected_btns = [None, None]
