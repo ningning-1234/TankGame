@@ -209,6 +209,14 @@ class SelectionPage(Page):
                 weapon = 'CloseQuarters'
             if (rand_wep == 6):
                 weapon = 'Charge'
+            if (rand_wep == 7):
+                weapon = 'Homer'
+            if (rand_wep == 8):
+                weapon = 'Detonator'
+            if (rand_wep == 9):
+                weapon = 'Barrage'
+            if (rand_wep == 10):
+                weapon = 'Guided'
         self.selected_weps[player-1] = weapon
         self.selected_btns[player-1].border_size = 0
         self.selected_btns[player-1].color = (70, 70, 70)

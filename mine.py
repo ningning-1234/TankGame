@@ -10,6 +10,7 @@ class Mine(MovableEntity):
     def __init__(self, pos, game_map, player, explosion_size, duration):
         super().__init__((pos[0], pos[1], MINE_SIZE, MINE_SIZE), game_map, 0)
         self.player = player
+        self.damage = 20
         self.explosion_size = explosion_size
         self.duration = duration
         self.player_collide_timer = 60
@@ -21,9 +22,11 @@ class Mine(MovableEntity):
         Creates an explosion object in the center of the mine object.
         :return: None
         '''
+        if(not self.active):
+            return
         pos = self.explosion_size / 2
-        explosion = Explosion((self.centerx - pos, self.centery - pos),
-                              self.explosion_size, self.game_map,  10, self.player)
+        explosion = Mine_Explosion((self.centerx - pos, self.centery - pos),
+                                    self.damage, self.explosion_size, self.game_map,  30, self.player)
         self.game_map.entity_lst.append(explosion)
         self.active = False
 
@@ -51,6 +54,11 @@ class Mine(MovableEntity):
         self.explode()
         bullet.active = False
 
+    def explode_collide(self, explode):
+        if(not self.active):
+            return
+        self.explode()
+
     def update(self, *args, **kwargs):
         '''
         Updates mine duration and mine counter.
@@ -61,16 +69,17 @@ class Mine(MovableEntity):
         if (not self.active):
             self.game_map.entity_lst.remove(self)
             self.player.mine_counter = self.player.mine_counter - 1
-
-        mine_index = self.collidelist(self.game_map.bullet_lst)
-        if (mine_index != -1):
-            self.bullet_collide(self.game_map.bullet_lst[mine_index])
-
         super().update(args, kwargs)
         self.player_collide_timer = self.player_collide_timer - 1
         self.duration = self.duration - 1
         if (self.duration <= 0):
             self.explode()
+        mine_index = self.collidelist(self.game_map.bullet_lst)
+        if (mine_index != -1):
+            self.bullet_collide(self.game_map.bullet_lst[mine_index])
+        for entity in self.game_map.entity_lst:
+            if (issubclass(type(entity), Explosion)):
+                self.explode_collide(self.game_map.entity_lst[mine_index])
 
     def draw(self, surface):
         '''

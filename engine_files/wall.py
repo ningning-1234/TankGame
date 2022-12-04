@@ -1,4 +1,3 @@
-from random import randint
 from engine_files.utils import *
 
 
@@ -78,21 +77,11 @@ class Wall():
 
 
 class Block(pygame.Rect):
-    def __init__(self, pos, block_type):
-        size = (50, 50)
-        sprite_folder = '1-1_block'
-        if (block_type == 1):
-            size = (50, 50)
-            sprite_folder = '1-1_block'
-        if (block_type == 2):
-            size = (100, 100)
-            sprite_folder = '2-2_block'
-        if (block_type == 3):
-            size = (100, 50)
-            sprite_folder = '2-1_block'
+    def __init__(self, pos, size, img):
         super().__init__(pos, size)
         self.pos = pos
         self.size = size
+        self.img = img
         # top left
         corner1 = (self.pos[0], self.pos[1])
         # top right
@@ -108,10 +97,6 @@ class Block(pygame.Rect):
             Wall(corner1, corner4, 2),  # left
             Wall(corner1, corner2, 3),  # top
         ]
-        self.folder = './assets/blocks/' + sprite_folder
-        self.random_sprite = randint(1, 2)
-        self.img = get_transparent_surface(pygame.image.load(self.folder + '/block' + str(self.random_sprite) + '.png'),
-                                           (self[2], self[3]))
 
     def update(self, *args, **kwargs):
         pass

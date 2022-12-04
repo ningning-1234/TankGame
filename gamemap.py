@@ -42,7 +42,7 @@ class Game(Page):
         # game_map.block_lst.append(block2)
         # block3 = GameBlock((50, 150), 3)
         # game_map.block_lst.append(block3)
-        block4 = BreakableBlock((50, 250), game_map, 2, 50)
+        block4 = BreakableBlock((50, 250), game_map, 3, 100)
         game_map.block_lst.append(block4)
 
         self.add_component(game_map)
@@ -105,6 +105,8 @@ class GameMap(PageComponent):
         if(self.player2 is not None):
             self.player2.update(kb_inputs=kwargs['kb_inputs'], controller_inputs=kwargs['controller_inputs2'])
 
+        for block in self.block_lst:
+            block.update()
         for bullet in self.bullet_lst:
             bullet.update()
         for entity in self.entity_lst:

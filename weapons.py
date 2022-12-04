@@ -436,7 +436,7 @@ class Charge(TankCannon):
                                   self.player.game_map, 5, self.angle + rand_angle, 4, self.explosion_size, self.player,
                                   self.bullet_timer)
             self.player.game_map.bullet_lst.append(bullet)
-            self.cooldown_shoot_delay = self.cooldown_shoot_delay + 15
+            # self.cooldown_shoot_delay = self.cooldown_shoot_delay + 15
             if(self.cooldown_shoot_delay>300):
                 self.cooldown_shoot_delay = 300
 
@@ -485,7 +485,7 @@ class Homer(TankCannon):
 class Detonator(TankCannon):
     def __init__(self, pos, width, height, img_folder_path, reticle_pos, player):
         super().__init__(pos, width, height, img_folder_path, reticle_pos, player)
-        self.shoot_delay = 15
+        self.shoot_delay = 20
         self.bullet_spawn_dist = 45
         self.explosion_size = 150
         self.last_bullet = None
@@ -508,7 +508,7 @@ class Detonator(TankCannon):
         if(self.last_bullet is not None):
             self.last_bullet.bullet_explode()
         bullet = Explode_Bullet((self.bullet_spawn[0] + offsetx, self.bullet_spawn[1] + offsety),
-                        self.player.game_map, 8, self.angle, 10, self.explosion_size, self.player, self)
+                        self.player.game_map, 8, self.angle, 8, self.explosion_size, self.player, self)
         self.last_bullet = bullet
         self.player.game_map.bullet_lst.append(bullet)
 
@@ -544,7 +544,7 @@ class Guided(TankCannon):
         super().__init__(pos, width, height, img_folder_path, reticle_pos, player)
         self.reticle = Target_Reticle((reticle_pos[0] + 80, reticle_pos[1] + 15), self.player.game_map, img_folder_path, self.player)
         self.player.reticle = self.reticle
-        self.shoot_delay = 300
+        self.shoot_delay = 15
         self.bullet_spawn_dist = 45
         self.explosion_size = 20
         self.has_bullet = False
@@ -562,25 +562,25 @@ class Guided(TankCannon):
         self.img = self.default_img
 
     def shoot_bullet(self):
-        if (not self.has_bullet):
-            bullet = Target_Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
-                            self.player.game_map, 5, self.angle, 20, self.explosion_size, self.player, self.reticle, 12, 60, self.shoot_delay)
-            self.has_bullet = True
-            self.player.game_map.bullet_lst.append(bullet)
+        # if (not self.has_bullet):
+        bullet = Target_Bullet((self.bullet_spawn[0], self.bullet_spawn[1]),
+                        self.player.game_map, 5, self.angle, 4, self.explosion_size, self.player, self.reticle, 5, 60, 180)
+        self.has_bullet = True
+        self.player.game_map.bullet_lst.append(bullet)
 
     def update(self, *args, **kwargs):
-        if(self.has_bullet):
-            self.shooting = True
-        else:
-            self.shooting = False
-            self.reticle.img = self.reticle.default_img
+        # if(self.has_bullet):
+        #     self.shooting = True
+        # else:
+        #     self.shooting = False
+        #     self.reticle.img = self.reticle.default_img
         super().update(args, kwargs)
 
-#todo
-# reticle can go anywhere on screen
-# the bullet follows the reticle
-# cannot fire another bullet while the current bullet is on screen
-# bullet explodes after a certain amount of time
+# todo
+#  reticle can go anywhere on screen
+#  the bullet follows the reticle
+#  cannot fire another bullet while the current bullet is on screen
+#  bullet explodes after a certain amount of time
 
 weapons_table = {
     'Streamlined' : TankCannon,

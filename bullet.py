@@ -16,6 +16,7 @@ class Bullet(MovableEntity):
         # whether the bullet can hit its owner
         self.self_damage = False
         self.damage = damage
+        self.block_damage = self.damage
         self.collide_entities = []
 
     def bound_collide(self, bound):
@@ -86,9 +87,8 @@ class Bullet(MovableEntity):
         if(self.active == True):
             pos = self.explosion_size / 2
             explosion = Explosion((self.centerx - pos, self.centery - pos),
-                                  self.explosion_size, self.game_map, 10, self.owner)
+                                  self.explosion_damage, self.explosion_size, self.game_map, 10, self.owner)
             explosion.self_damage = False
-            explosion.damage = self.explosion_damage
             self.game_map.entity_lst.append(explosion)
 
     def update(self, *args, **kwargs):
@@ -228,14 +228,20 @@ class Explode_Bullet(Bullet):
         super().__init__(pos, game_map, speed, angle, damage, explosion_size, owner)
         self.weapon = weapon
         self.img = self.img = get_transparent_surface(pygame.image.load('./assets/explode_bullet.png'), (20, 10))
-        self.explosion_damage = 10
+        self.explosion_damage = 8
 
     def bullet_explode(self):
         self.explode()
         self.active = False
 
     def explode(self):
-        super().explode()
+        if (self.active == True):
+            pos = self.explosion_size / 2
+            explosion = Mine_Explosion((self.centerx - pos, self.centery - pos),
+                                  self.explosion_damage, self.explosion_size, self.game_map, 10, self.owner)
+            explosion.self_damage = False
+            explosion.damage = self.explosion_damage
+            self.game_map.entity_lst.append(explosion)
         self.weapon.last_bullet = None
 
     def draw(self, surface):
@@ -263,6 +269,6 @@ class Target_Bullet(Homing_Bullet):
         self.bullet_timer = self.bullet_timer - 1
         if (self.bullet_timer <= 0):
             self.bullet_despawn()
-        if(not self.active):
-            self.owner.cannon.has_bullet = False
+        # if(not self.active):
+        #     self.owner.cannon.has_bullet = False
         super().update(args, kwargs)

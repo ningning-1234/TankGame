@@ -12,7 +12,9 @@ class Animation:
         self.default_loop = loop
         self.loop = loop
         # default frame shown once animation is complete
-        self.default_frame = default_frame
+        self.default_frame = default_frame = default_frame
+        if (self.default_frame > len(frames)):
+            self.default_frame = 0
 
         self.complete = False
         self.timer = 0
@@ -29,13 +31,16 @@ class Animation:
         if (not self.complete):
             current_frame = self.sequence[self.timer // self.frame_duration]
             self.timer = self.timer + 1
-        # print(current_frame)
-
+            print(current_frame)
         if (self.timer >= self.timer_lim):
             self.timer = 0
             self.loop = self.loop - 1
-            if (self.loop == 0):
-                self.complete = True
+            # todo
+            #  If you try to display a frame that is out of range display default frame
+            self.complete = True
+        if (current_frame >= len(self.frames)):
+            print('test')
+            current_frame = self.default_frame
         return self.frames[current_frame]
 
 class TransformAnimation():
